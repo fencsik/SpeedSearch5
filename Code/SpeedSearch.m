@@ -1,6 +1,6 @@
 function SpeedSearch (varargin)
     global Experiment = 'test';
-    global Version = '0.01';
+    global Version = '0.02';
     global TestFlag = 1;
     if (nargin > 0)
         HandleInputArguments(varargin{:})
@@ -39,8 +39,12 @@ function RunBlock ()
     # Size of the underlying sinewave patch
     par.gaborSize = 200;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
+    # Define two destination rects
+    centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
+    par.destRect = [OffsetRect(centeredGaborRect, -1 * par.gaborSize, 0)', ...
+                    OffsetRect(centeredGaborRect, 1 * par.gaborSize, 0)'];
     # Gabor drift speed
-    phaseStep = 30;
+    phaseStep = [40, 70];
     # Starting phase
     phase = 0;
     # Gabor frequency (between about .05 and .2 is reasonable)
@@ -53,6 +57,7 @@ function RunBlock ()
     aspectratio = 1.0;
     # Angle in degrees
     angle = 0;
+    parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, 2);
     gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
     KbReleaseWait();
     Screen('FillRect', par.mainWindow, 128);
@@ -60,10 +65,10 @@ function RunBlock ()
     tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
     phase = phase - phaseStep;
     while (1)
-        phase = mod(phase + phaseStep, 360);
+        parameters(1, :) = mod(parameters(1, :) + phaseStep, 360);
         Screen('FillRect', par.mainWindow, 128);
-        Screen('DrawTexture', par.mainWindow, gabortex, [], [], angle, [], [], [], [], kPsychDontDoRotation, ...
-               [phase+180, freq, spatialconstant, contrast]);
+        Screen('DrawTextures', par.mainWindow, [gabortex, gabortex], [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, ...
+               parameters);
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
         if (KbCheck)
