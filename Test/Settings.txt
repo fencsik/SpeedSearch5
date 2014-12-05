@@ -1,0 +1,20 @@
+# Everything after a "#" is treated as a comment
+
+# Number of practice trials at the beginning of a block
+PracticeTrials = 30
+
+# Number of experimental trials
+nExperimentalTrials = 120
+
+# Experiment name
+experiment = Experiment
+
+# Block name
+block = Block
+
+# Pause every N trials (0 means don't pause at all)
+pauseEvery = 50
+
+# Colors are specified as RGB triplets (or RGBA quadruplets)
+backgroundColor = 0 0 0   # Background color
+textColor = 255 255 255
