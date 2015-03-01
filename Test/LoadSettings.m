@@ -57,7 +57,6 @@ function settingsStruct = ProcessSettingsFile (fid)
         if (isempty(key))
             break;
         else
-            key = StripWhitespaceFromString(key);
             settingsStruct = setfield(settingsStruct, key, value);
         endif
     endwhile
@@ -72,8 +71,7 @@ function [key, val] = GetNextTokenFromSettingsFile (fid)
             break;
         endif
         str = strtrim(RemoveComments(str));
-        nEqualSigns = numel(strfind(str, "="));
-        if (~isempty(str) && nEqualSigns == 1)
+        if (~isempty(str))
             tokens = strtrim(strsplit(str, "="));
             key = tokens{1};
             val = tokens{2};
