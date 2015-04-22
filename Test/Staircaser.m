@@ -7,51 +7,51 @@ debug = 0;
 nOutputArgs = nargout;
 
 printHelp = 0;
-if command(end) == '?'
+if command(end) == "?"
     printHelp = 1;
     command = command(1:end-1);
 end
 
 switch command
-  case 'Create'
+  case "Create"
     varargout = StaircaserCreate(varargin);
-  case 'Delete'
+  case "Delete"
     varargout = StaircaserDelete(varargin);
-  case 'StartTrial'
+  case "StartTrial"
     varargout = StaircaserStartTrial(varargin);
-  case 'EndTrial'
+  case "EndTrial"
     varargout = StaircaserEndTrial(varargin);
-  case 'FinalValue'
+  case "FinalValue"
     varargout = StaircaserFinalValue(varargin);
-  case 'GetReversals'
+  case "GetReversals"
     varargout = StaircaserGetReversals(varargin);
-  case 'Plot'
+  case "Plot"
     varargout = StaircaserPlot(varargin);
-  case 'Progress'
+  case "Progress"
     varargout = StaircaserProgress(varargin);
-  case 'List'
+  case "List"
     varargout = StaircaserList(varargin);
-    %  case 'PrintTracks'
+    %  case "PrintTracks"
     %    varargout = StaircasePrintTracks(varargin);
-    %   case 'GetValue'
+    %   case "GetValue"
     %     varargout = StaircaserGetValue(varargin);
-    %   case 'GetTrack'
+    %   case "GetTrack"
     %     varargout = StaircaserGetTrack(varargin);
-    %   case 'IsDone'
+    %   case "IsDone"
     %     varargout = StaircaserIsDone(varargin);
   otherwise
-    error('Staircaser: command %s not recognized', command);
+    error("Staircaser: command %s not recognized", command);
 end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('Create')
+%%% Staircaser("Create")
 
 function argout = StaircaserCreate(argin)
 
 function Help
-fprintf(['\nid = Staircaser(''Create'', type, nReversals, initial, ', ...
-         'steps, [nReversalsDropped], [nTracks], [range]);\n\n']);
+fprintf(["\nid = Staircaser(\"Create\", type, nReversals, initial, ", ...
+         "steps, [nReversalsDropped], [nTracks], [range]);\n\n"]);
 end
 
 if printHelp
@@ -64,14 +64,14 @@ end
 nargs = numel(argin);
 if nargs < 4
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 7
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 type = argin{1};
 if (type ~= 1)
-    error('staircase types other than 1 are not yet supported');
+    error("staircase types other than 1 are not yet supported");
 end
 nReversals = argin{2};
 initialValue = argin{3};
@@ -95,16 +95,16 @@ end
 % process output arguments
 if nOutputArgs > 1
     Help;
-    error('too many output arguments');
+    error("too many output arguments");
 end
 
 % error handling
 if ~any(sign(steps) > 0)
-    error('no positive steps');
+    error("no positive steps");
 elseif ~any(sign(steps) < 0)
-    error('no negative steps');
+    error("no negative steps");
 elseif nReversals == nReversalsDropped
-    error('nReversalsDropped = nReversals, so no reversals would be used');
+    error("nReversalsDropped = nReversals, so no reversals would be used");
 end
 
 % manage list of staircase ids
@@ -112,7 +112,7 @@ if isempty(idList)
     % idList has not been initialized
     idList = zeros(idListBase, 1);
     if debug >= 1
-        fprintf('%s: initialized idList to length %d\n', mfilename, ...
+        fprintf("%s: initialized idList to length %d\n", mfilename, ...
                 numel(idList));
     end
 elseif sum(idList) == numel(idList)
@@ -121,7 +121,7 @@ elseif sum(idList) == numel(idList)
     newStaircaseList(1:numel(idList)) = idList;
     idList = newStaircaseList;
     if debug >= 1
-        fprintf('%s: expanded idList to length %d\n', mfilename, ...
+        fprintf("%s: expanded idList to length %d\n", mfilename, ...
                 numel(idList));
     end
 end
@@ -149,20 +149,20 @@ scLabels = cell(nTracks, 1);
 for i = 1:nTracks
     scLabels{i} = i;
 end;
-staircase(id).tracks = struct('label', scLabels, ...
-                              'value', initialValue, ...
-                              'counter', 0, ...
-                              'lastStepDir', [], ...
-                              'reversals', nan(nReversals, 1), ...
-                              'values', nan(nTrialsBase, 1), ...
-                              'responses', nan(nTrialsBase, 1), ...
-                              'nTrials', 0);
+staircase(id).tracks = struct("label", scLabels, ...
+                              "value", initialValue, ...
+                              "counter", 0, ...
+                              "lastStepDir", [], ...
+                              "reversals", nan(nReversals, 1), ...
+                              "values", nan(nTrialsBase, 1), ...
+                              "responses", nan(nTrialsBase, 1), ...
+                              "nTrials", 0);
 idList(id) = 1;
 if debug >= 1
-    fprintf(['%s: created staircase %d with %d reversals, %d ', ...
-             'reversals dropped, %d tracks\n'], mfilename, id, ...
+    fprintf(["%s: created staircase %d with %d reversals, %d ", ...
+             "reversals dropped, %d tracks\n"], mfilename, id, ...
             nReversals, nReversalsDropped, nTracks);
-    fprintf('%s: and range of \n');
+    fprintf("%s: and range of \n");
     disp(range);
 end
 if debug >= 2
@@ -173,12 +173,12 @@ argout = {id, 4};
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('Delete')
+%%% Staircaser("Delete")
 
 function argout = StaircaserDelete(argin)
 
 function Help
-fprintf('\nsuccess = Staircaser(''Delete'', id);\n\n');
+fprintf("\nsuccess = Staircaser(\"Delete\", id);\n\n");
 end
 
 if printHelp
@@ -190,16 +190,16 @@ end
 nargs = numel(argin);
 if nargs < 1
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 1
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 id = argin{1};
 success = zeros(1, numel(id));
 for i = 1:numel(id)
     if ~isnumeric(id(i)) || id(i) < 1 || id(i) > numel(idList)
-        error('invalid staircase id given');
+        error("invalid staircase id given");
     elseif idList(id(i)) == 0;
         success(i) = 1;
     else
@@ -221,7 +221,7 @@ end
 % process output arguments
 if nOutputArgs > 1
     Help;
-    error('too many output arguments');
+    error("too many output arguments");
 end
 
 % manage list of staircase ids
@@ -232,13 +232,13 @@ if numel(idList) >= idListBase && sum(idList) <= numel(idList) / 2.0 && ...
     while idList(i) == 0, i = i - 1; end
     idList = idList(1:i);
     if debug >= 1
-        fprintf('%s: shrunk idList to length %d\n', mfilename, ...
+        fprintf("%s: shrunk idList to length %d\n", mfilename, ...
                 numel(idList));
     end
 end
 
 if debug >= 1
-    fprintf('%s: deleted staircase %d\n', mfilename, id);
+    fprintf("%s: deleted staircase %d\n", mfilename, id);
 end
 argout = {success};
 
@@ -246,12 +246,12 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('StartTrial')
+%%% Staircaser("StartTrial")
 
 function argout = StaircaserStartTrial(argin)
 
 function Help
-fprintf('\n[success, value, track] = Staircaser(''StartTrial'', id);\n\n');
+fprintf("\n[success, value, track] = Staircaser(\"StartTrial\", id);\n\n");
 end
 if printHelp
     Help;
@@ -263,16 +263,16 @@ end
 nargs = numel(argin);
 if nargs < 1
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 1
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 
 % process output arguments
 if nOutputArgs > 3
     Help;
-    error('too many output arguments');
+    error("too many output arguments");
 end
 id = argin{1};
 AssertValidId(id);
@@ -281,14 +281,14 @@ if staircase(id).isDone
     label = 0;
     value = staircase(id).finalValue;
     if debug >= 1
-        fprintf('%s: staircase %d is complete\n', mfilename, id);
+        fprintf("%s: staircase %d is complete\n", mfilename, id);
     end
 elseif staircase(id).inTrial
     success = 0;
     label = [];
     value = [];
     if debug >= 2
-        fprintf('%s: trial already started for staircase %d\n', ...
+        fprintf("%s: trial already started for staircase %d\n", ...
                 mfilename, id);
     end
 else
@@ -301,7 +301,7 @@ else
     success = 1;
     label = staircase(id).tracks(currentTrack).label;
     if debug >= 2
-        fprintf('%s: started trial for staircase %d, track %d\n', ...
+        fprintf("%s: started trial for staircase %d, track %d\n", ...
                 mfilename, id, label);
     end
 end
@@ -312,13 +312,13 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('EndTrial')
+%%% Staircaser("EndTrial")
 
 function argout = StaircaserEndTrial(argin);
 
 function Help
-fprintf(['\n[success, isDone, reversal] = Staircaser(''EndTrial'', ' ...
-         'id, response);\n\n']);
+fprintf(["\n[success, isDone, reversal] = Staircaser(\"EndTrial\", " ...
+         "id, response);\n\n"]);
 end
 
 if printHelp
@@ -330,10 +330,10 @@ end
 nargs = numel(argin);
 if nargs < 2
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 2
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 id = argin{1};
 response = argin{2};
@@ -347,8 +347,8 @@ elseif ~staircase(id).inTrial
     isDone = staircase(id).isDone;
     reversal = 0;
 elseif response < 0 || response > numel(staircase(id).steps)
-    error(['invalid response code; for staircase %d, must be in range ' ...
-           '[0, %d]'], id, numel(staircase(id).steps));
+    error(["invalid response code; for staircase %d, must be in range " ...
+           "[0, %d]"], id, numel(staircase(id).steps));
 else
     reversal = 0;
     % reset staircase
@@ -372,7 +372,7 @@ else
             staircase(id).tracks(ctrack).responses;
         staircase(id).tracks(ctrack).responses = x;
         if debug >= 1
-            fprintf('%s: expanded data matrix to length %d\n', ...
+            fprintf("%s: expanded data matrix to length %d\n", ...
                     mfilename, numel(x));
         end
     end
@@ -386,13 +386,13 @@ else
         step = staircase(id).steps(response);
         stepDir = sign(step); % could be zero, if step is zero
         if debug >= 2
-            fprintf('%s: took step of %0.3f on staircase %d, track %d\n', ...
+            fprintf("%s: took step of %0.3f on staircase %d, track %d\n", ...
                     mfilename, step, id, label);
         end
         % check for reversal
         if ~isempty(lastStepDir) && stepDir ~= 0 && stepDir ~= lastStepDir
             if debug >= 2
-                fprintf('%s: reversal on staircase %d, track %d\n', ...
+                fprintf("%s: reversal on staircase %d, track %d\n", ...
                         mfilename, id, label);
             end
             reversal = staircase(id).tracks(ctrack).counter + 1;
@@ -418,7 +418,7 @@ else
     if staircase(id).tracks(ctrack).counter >= staircase(id).nReversals
         % this track is done
         if debug >= 1
-            fprintf('%s: completed track %d for staircase %d\n', ...
+            fprintf("%s: completed track %d for staircase %d\n", ...
                     mfilename, label, id);
         end
         nTracksRemaining = staircase(id).nTracksRemaining;
@@ -434,7 +434,7 @@ else
         staircase(id).lastTrack = 0;
     end
     if debug >= 2
-        fprintf('%s: ended trial for staircase %d, track %d\n', ...
+        fprintf("%s: ended trial for staircase %d, track %d\n", ...
                 mfilename, id, label);
     end
     isDone = (staircase(id).nTracksRemaining == 0);
@@ -449,12 +449,12 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('FinalValue')
+%%% Staircaser("FinalValue")
 
 function argout = StaircaserFinalValue(argin)
 
 function Help
-fprintf('\nvalue = Staircaser(''FinalValue'', id);\n\n');
+fprintf("\nvalue = Staircaser(\"FinalValue\", id);\n\n");
 end
 if printHelp
     Help;
@@ -465,10 +465,10 @@ end
 nargs = numel(argin);
 if nargs < 1
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 1
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 id = argin{1};
 AssertValidId(id);
@@ -483,12 +483,12 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('GetReversals')
+%%% Staircaser("GetReversals")
 
 function argout = StaircaserGetReversals(argin)
 
 function Help
-fprintf('\nreversals = Staircaser(''GetReversals'', id);\n\n');
+fprintf("\nreversals = Staircaser(\"GetReversals\", id);\n\n");
 end
 if printHelp
     Help;
@@ -499,10 +499,10 @@ end
 nargs = numel(argin);
 if nargs < 1
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 1
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 
 id = argin{1};
@@ -517,14 +517,14 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('Plot')
+%%% Staircaser("Plot")
 
 function argout = StaircaserPlot(argin)
 
 argout = {[]};
 
 function Help
-fprintf('\nStaircaser(''Plot'', id, title);\n\n');
+fprintf("\nStaircaser(\"Plot\", id, title);\n\n");
 end
 if printHelp
     Help;
@@ -535,10 +535,10 @@ end
 nargs = numel(argin);
 if nargs < 1
     Help;
-    error('not enough input arguments');
+    error("not enough input arguments");
 elseif nargs > 2
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 id = argin{1};
 if nargs < 2
@@ -567,7 +567,7 @@ for t = 1:nTracks
     nTrials(t) = max(find(~isnan(y(:, t))));
 end
 if ~any(nTrials > 0)
-    warning('no data to plot');
+    warning("no data to plot");
     return;
 end
 
@@ -575,7 +575,7 @@ end
 first = min(find(nTrials > 0));
 figure;
 plot(1:nTrials(first), y(1:nTrials(first), first), ...
-     '-o', 'LineWidth', 2, 'MarkerFaceColor', 'w');
+     "-o", "LineWidth", 2, "MarkerFaceColor", "w");
 hold all;
 if isempty(staircase(id).range)
     axis([1, max(nTrials)+1, min(min(y)), max(max(y))]);
@@ -591,26 +591,26 @@ for t = first+1:nTracks
     if nTrials(t) == 0, continue; end
     offset = offset + .1;
     plot(offset + (1:nTrials(t)), y(1:nTrials(t), t), ...
-         '-o', 'LineWidth', 2, 'MarkerFaceColor', 'w');
+         "-o", "LineWidth", 2, "MarkerFaceColor", "w");
 end
 
 % plot final value
-plot([1, max(nTrials)+1], [final, final], 'k-', 'LineWidth', 3);
+plot([1, max(nTrials)+1], [final, final], "k-", "LineWidth", 3);
 hold off;
 
 end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('Progress')
+%%% Staircaser("Progress")
 
 function argout = StaircaserProgress(argin)
 
     argout = {[]};
 
     function Help
-        fprintf(['\n[progress, stepsize] = ' ...
-                 'Staircaser(''Progress'', id);\n\n']);
+        fprintf(["\n[progress, stepsize] = " ...
+                 "Staircaser(\"Progress\", id);\n\n"]);
     end
     if printHelp
         Help;
@@ -621,10 +621,10 @@ function argout = StaircaserProgress(argin)
     nargs = numel(argin);
     if nargs < 1
         Help;
-        error('not enough input arguments');
+        error("not enough input arguments");
     elseif nargs > 1
         Help;
-        error('too many input arguments');
+        error("too many input arguments");
     end
     id = argin{1};
 
@@ -639,12 +639,12 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser('List')
+%%% Staircaser("List")
 
 function argout = StaircaserList(argin)
 
 function Help
-fprintf(['\nid = Staircaser(''List'');\n\n']);
+fprintf(["\nid = Staircaser(\"List\");\n\n"]);
 end
 
 if printHelp
@@ -657,12 +657,12 @@ end
 nargs = numel(argin);
 if nargs > 0
     Help;
-    error('too many input arguments');
+    error("too many input arguments");
 end
 % process output arguments
 if nOutputArgs > 1
     Help;
-    error('too many output arguments');
+    error("too many output arguments");
 end
 
 if isempty(idList) || all(idList == 0)
@@ -767,7 +767,7 @@ end
 
 function AssertValidId (id)
     if ~isnumeric(id) || id < 1 || id > numel(idList) || idList(id) == 0
-        error('invalid staircase id');
+        error("invalid staircase id");
     end
 end
 
