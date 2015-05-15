@@ -103,6 +103,23 @@ function CheckNumberOfInputArguments(nArgs, minArgs, maxArgs, helpText=[])
     endif
 endfunction
 
+function CheckNumberOfOutputArguments(nArgs, minArgs, maxArgs, helpText=[])
+    if (nArgs < minArgs)
+        error("%s\nNot enough output arguments", helpText);
+    elseif (nArgs > maxArgs)
+        error("%s\nToo many output arguments", helpText);
+    endif
+endfunction
+
+function helpRequested = CheckForHelpRequest (helpText)
+    global _staircaserPar;
+    helpRequested = 0;
+    if (_staircaserPar.printHelp)
+        printf('%s', helpText);
+        helpRequested = 1;
+    endif
+endfunction
+
 ###########################################################################
 ### Staircaser("Create")
 
@@ -110,10 +127,9 @@ function argout = StaircaserCreate(argin)
     global _staircaserPar;
     helpText = sprintf(["\nid = Staircaser(\"Create\", type, nReversals, initial,\n", ...
                         "steps, [nReversalsDropped], [nTracks], [range]);\n\n"]);
-    if (_staircaserPar.printHelp)
-        printf('%s', helpText);
+    if (CheckForHelpRequest(helpText))
         argout = {[]};
-        return
+        return;
     endif
 
     ## process input arguments
@@ -143,9 +159,7 @@ function argout = StaircaserCreate(argin)
         range = [min(argin{7}), max(argin{7})];
     endif
     ## process output arguments
-    if _staircaserPar.nOutputArgs > 1
-        error("%s\ntoo many output arguments", helpText);
-    endif
+    CheckNumberOfOutputArguments(_staircasePar.nOutputArgs, 0, 1, helpText);
 
     ## error handling
     if !any(sign(steps) > 0)
