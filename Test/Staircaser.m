@@ -159,7 +159,7 @@ function argout = StaircaserCreate(argin)
         range = [min(argin{7}), max(argin{7})];
     endif
     ## process output arguments
-    CheckNumberOfOutputArguments(_staircasePar.nOutputArgs, 0, 1, helpText);
+    CheckNumberOfOutputArguments(_staircaserPar.nOutputArgs, 0, 1, helpText);
 
     ## error handling
     if !any(sign(steps) > 0)
