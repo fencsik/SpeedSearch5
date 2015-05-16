@@ -48,10 +48,9 @@ function InitializeStaircaser ()
     global _staircaserPar;
     _staircaserPar = struct();
     _staircaserPar.debug = 2;
-    _staircaserPar.idListBase = 5;
     _staircaserPar.nTrialsBase = 4;
     _staircaserPar.staircase = struct();
-    InitializeStaircaseIDList();
+    _staircaserPar.idList = [];
     if (_staircaserPar.debug >= 1)
         printf("%s: Initialized staircaser\n", mfilename);
     endif
@@ -66,33 +65,22 @@ function tf = IsStaircaserInitialized()
     endif
 endfunction
 
-function InitializeStaircaseIDList ()
-    global _staircaserPar;
-    _staircaserPar.idList = zeros(_staircaserPar.idListBase, 1);
-    if _staircaserPar.debug >= 1
-        fprintf("%s: initialized idList to length %d\n", mfilename, ...
-                numel(_staircaserPar.idList));
-    endif
-endfunction
-
-function ExpandStaircaseIDList ()
+function id = FindUnusedStaircaseID ()
     global _staircaserPar;
     idList = _staircaserPar.idList;
-    _staircaserPar.idList = zeros(numel(_staircaserPar.idList) + _staircaserPar.idListBase, 1);
-    _staircaserPar.idList(1:numel(idList)) = idList;
-    if _staircaserPar.debug >= 1
-        fprintf("%s: expanded idList to length %d\n", mfilename, ...
-                numel(_staircaserPar.idList));
+    if (isempty(idList))
+        id = 1;
+        return;
     endif
-endfunction
-
-function id = GetNewStaircaseID ()
-    global _staircaserPar;
-    if (all(_staircaserPar.idList))
-        ExpandStaircaseIDList();
-    endif
-    id = min(find(_staircaserPar.idList == 0));
-    _staircaserPar.idList(id) = 1;
+    ## find the first unused number
+    for (i = 1:max(idList))
+        if (!any(i == idList))
+            id = i;
+            return;
+        endif
+    endfor
+    ## if we've gotten here, then all numbers up to max(idList) are in use
+    id = max(idList) + 1;
 endfunction
 
 function CheckNumberOfInputArguments(nArgs, minArgs, maxArgs, helpText=[])
@@ -201,7 +189,8 @@ function argout = StaircaserCreate(argin)
                               "responses", nan(_staircaserPar.nTrialsBase, 1),
                               "nTrials", 0);
     ## get next available id
-    id = GetNewStaircaseID();
+    id = FindUnusedStaircaseID();
+    _staircaserPar.idList = [_staircaserPar.idList; id];
     _staircaserPar.staircase(id) = staircase;
     if _staircaserPar.debug >= 1
         fprintf(["%s: created staircase %d with %d reversals, %d ", ...
