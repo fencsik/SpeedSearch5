@@ -207,77 +207,54 @@ function argout = StaircaserCreate(argin)
     argout = {id};
 endfunction
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("Delete")
+###########################################################################
+### Staircaser("Delete")
 
 function argout = StaircaserDelete(argin)
+    global _staircaserPar;
+    helpText = sprintf("\nsuccess = Staircaser(\"Delete\", id);\n\n");
+    if (CheckForHelpRequest(helpText))
+        argout = {[]};
+        return;
+    endif
 
-function Help
-fprintf("\nsuccess = Staircaser(\"Delete\", id);\n\n");
-end
+    ## process input arguments
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 1, 1, helpText);
+    ## process output arguments
+    CheckNumberOfOutputArguments(_staircaserPar.nOutputArgs, 0, 1, helpText);
 
-if printHelp
-    Help;
-    argout = {[]};
-end
-
-% process input arguments
-nargs = numel(argin);
-if nargs < 1
-    Help;
-    error("not enough input arguments");
-elseif nargs > 1
-    Help;
-    error("too many input arguments");
-end
-id = argin{1};
-success = zeros(1, numel(id));
-for i = 1:numel(id)
-    if ~isnumeric(id(i)) || id(i) < 1 || id(i) > numel(idList)
-        error("invalid staircase id given");
-    elseif idList(id(i)) == 0;
-        success(i) = 1;
-    else
-        % clear staircase information
-        staircase(id(i)).type = [];
-        staircase(id(i)).nReversals = [];
-        staircase(id(i)).steps = [];
-        staircase(id(i)).nReversalsDropped = [];
-        staircase(id(i)).nTracks = [];
-        staircase(id(i)).nTracksRemaining = [];
-        staircase(id(i)).range = [];
-        staircase(id(i)).inTrial = [];
-        staircase(id(i)).currentTrack = [];
-        staircase(id(i)).tracks = [];
-        idList(id(i)) = 0;
-        success(i) = 1;
-    end
-end
-% process output arguments
-if nOutputArgs > 1
-    Help;
-    error("too many output arguments");
-end
-
-% manage list of staircase ids
-if numel(idList) >= idListBase && sum(idList) <= numel(idList) / 2.0 && ...
-        all(idList(end-idListBase+1:end) == 0)
-    % idList is mostly empty and has blank slots at the end, so clean it up
-    i = numel(idList);
-    while idList(i) == 0, i = i - 1; end
-    idList = idList(1:i);
-    if debug >= 1
-        fprintf("%s: shrunk idList to length %d\n", mfilename, ...
-                numel(idList));
-    end
-end
-
-if debug >= 1
-    fprintf("%s: deleted staircase %d\n", mfilename, id);
-end
-argout = {success};
-
-end
+    id = argin{1};
+    idList = _staircaserPar.idList;
+    success = zeros(1, numel(id));
+    for i = 1:numel(id)
+        if (!isnumeric(id(i)))
+            error("invalid staircase id given");
+        elseif (!any(id(i) == _staircaserPar.idList))
+            ## already closed or never created, so report success
+            success(i) = 1;
+        else
+            ## clear staircase information
+            index = find(id(i) == idList);
+            _staircaserPar.staircase(index).type = [];
+            _staircaserPar.staircase(index).nReversals = [];
+            _staircaserPar.staircase(index).steps = [];
+            _staircaserPar.staircase(index).nReversalsDropped = [];
+            _staircaserPar.staircase(index).nTracks = [];
+            _staircaserPar.staircase(index).nTracksRemaining = [];
+            _staircaserPar.staircase(index).range = [];
+            _staircaserPar.staircase(index).inTrial = [];
+            _staircaserPar.staircase(index).currentTrack = [];
+            _staircaserPar.staircase(index).tracks = [];
+            _staircaserPar.idList = idList(id(i) != idList);
+            success(i) = 1;
+            if (_staircaserPar.debug >= 1)
+                fprintf("%s: deleted staircase %d\n", mfilename, id);
+            endif
+        endif
+    endfor
+    argout = {success};
+endfunction
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
