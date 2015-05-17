@@ -235,18 +235,10 @@ function argout = StaircaserDelete(argin)
             success(i) = 1;
         else
             ## clear staircase information
-            index = find(id(i) == idList);
-            _staircaserPar.staircase(index).type = [];
-            _staircaserPar.staircase(index).nReversals = [];
-            _staircaserPar.staircase(index).steps = [];
-            _staircaserPar.staircase(index).nReversalsDropped = [];
-            _staircaserPar.staircase(index).nTracks = [];
-            _staircaserPar.staircase(index).nTracksRemaining = [];
-            _staircaserPar.staircase(index).range = [];
-            _staircaserPar.staircase(index).inTrial = [];
-            _staircaserPar.staircase(index).currentTrack = [];
-            _staircaserPar.staircase(index).tracks = [];
-            _staircaserPar.idList = idList(id(i) != idList);
+            index = find(id(i) == _staircaserPar.idList);
+            _staircaserPar.staircase(index:(end-1)) = _staircaserPar.staircase((index+1):end);
+            _staircaserPar.staircase(end) = [];
+            _staircaserPar.idList(index:(end-1)) = _staircaserPar.idList((index+1):end);
             success(i) = 1;
             if (_staircaserPar.debug >= 1)
                 fprintf("%s: deleted staircase %d\n", mfilename, id);
