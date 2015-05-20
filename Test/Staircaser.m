@@ -249,72 +249,57 @@ function argout = StaircaserDelete(argin)
     argout = {success};
 endfunction
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("StartTrial")
+###########################################################################
+### Staircaser("StartTrial")
 
 function argout = StaircaserStartTrial(argin)
+    global _staircaserPar;
+    helpText = sprintf("\n[success, value, track] = Staircaser(\"StartTrial\", id [, track]);\n\n");
+    if (CheckForHelpRequest(helpText))
+        argout = {[]};
+        return;
+    endif
 
-function Help
-fprintf("\n[success, value, track] = Staircaser(\"StartTrial\", id);\n\n");
-end
-if printHelp
-    Help;
-    argout = {[]};
-    return
-end
+    ## process input arguments
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 1, 1, helpText);
+    ## process output arguments
+    CheckNumberOfOutputArguments(_staircaserPar.nOutputArgs, 0, 3, helpText);
 
-% process input arguments
-nargs = numel(argin);
-if nargs < 1
-    Help;
-    error("not enough input arguments");
-elseif nargs > 1
-    Help;
-    error("too many input arguments");
-end
-
-% process output arguments
-if nOutputArgs > 3
-    Help;
-    error("too many output arguments");
-end
-id = argin{1};
-AssertValidId(id);
-if staircase(id).isDone
-    success = 1;
-    label = 0;
-    value = staircase(id).finalValue;
-    if debug >= 1
-        fprintf("%s: staircase %d is complete\n", mfilename, id);
-    end
-elseif staircase(id).inTrial
-    success = 0;
-    label = [];
-    value = [];
-    if debug >= 2
-        fprintf("%s: trial already started for staircase %d\n", ...
-                mfilename, id);
-    end
-else
-    staircase(id).inTrial = 1;
-    % pick the next remaining track
-    currentTrack = mod(staircase(id).lastTrack, ...
-                       staircase(id).nTracksRemaining) + 1;
-    staircase(id).currentTrack = currentTrack;
-    value = staircase(id).tracks(currentTrack).value;
-    success = 1;
-    label = staircase(id).tracks(currentTrack).label;
-    if debug >= 2
-        fprintf("%s: started trial for staircase %d, track %d\n", ...
-                mfilename, id, label);
-    end
-end
-
-argout = {success, value, label};
-
-end
-
+    id = argin{1};
+    AssertValidId(id);
+    index = find(id == _staircaserPar.idList);
+    if (_staircaserPar.staircase(index).isDone)
+        success = 1;
+        label = 0;
+        value = _staircaserPar.staircase(index).finalValue;
+        if (_staircaserPar.debug >= 1)
+            fprintf("%s: staircase %d is complete\n", mfilename, id);
+        endif
+    elseif (_staircaserPar.staircase(index).inTrial)
+        success = 0;
+        label = [];
+        value = [];
+        if (_staircaserPar.debug >= 2)
+            fprintf("%s: trial already started for staircase %d\n", ...
+                    mfilename, id);
+        endif
+    else
+        _staircaserPar.staircase(index).inTrial = 1;
+        ## pick the next remaining track
+        currentTrack = mod(_staircaserPar.staircase(index).lastTrack, ...
+                           _staircaserPar.staircase(index).nTracksRemaining) + 1;
+        _staircaserPar.staircase(index).currentTrack = currentTrack;
+        value = _staircaserPar.staircase(index).tracks(currentTrack).value;
+        label = _staircaserPar.staircase(index).tracks(currentTrack).label;
+        success = 1;
+        if (_staircaserPar.debug >= 2)
+            fprintf("%s: started trial for staircase %d, track %d\n", ...
+                    mfilename, id, label);
+        endif
+    endif
+    argout = {success, value, label};
+endfunction # StartTrial
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Staircaser("EndTrial")
