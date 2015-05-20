@@ -301,141 +301,44 @@ function argout = StaircaserStartTrial(argin)
     argout = {success, value, label};
 endfunction # StartTrial
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("EndTrial")
 
-function argout = StaircaserEndTrial(argin);
+###########################################################################
+### Staircaser("EndTrial")
 
-function Help
-fprintf(["\n[success, isDone, reversal] = Staircaser(\"EndTrial\", " ...
-         "id, response);\n\n"]);
-end
+function argout = StaircaserEndTrial (argin)
+    global _staircaserPar;
+    helpText = sprintf(["\n[success, isDone, reversal] = Staircaser(\"EndTrial\", ", ...
+                        "id, response);\n\n"]);
+    if (CheckForHelpRequest(helpText))
+        argout = {[]};
+        return;
+    endif
 
-if printHelp
-    Help;
-    argout = {[]};
-    return
-end
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 2, 2, helpText);
+    id = argin{1};
+    AssertValidId(id);
+    index = find(id == _staircaserPar.idList);
+    response = argin{2};
+    if (_staircaserPar.staircase(index).isDone)
+        success = 1;
+        isDone = 1;
+        reversal = 0;
+    elseif (!(_staircaserPar.staircase(index).inTrial))
+        success = 0;
+        isDone = _staircaserPar.staircase(index).isDone;
+        reversal = 0;
+    elseif (response < 0 || response > numel(_staircaserPar.staircase(index).steps))
+        error(["invalid response code; for staircase %d, must be in range ", ...
+               "[0, %d]"], id, numel(_staircaserPar.staircase(index).steps));
+    else
+        [isDone, reversal] = UpdateStaircase(index, response);
+        success = 1;
+    endif
+    argout = {success, isDone, reversal};
+endfunction # EndTrial
 
-nargs = numel(argin);
-if nargs < 2
-    Help;
-    error("not enough input arguments");
-elseif nargs > 2
-    Help;
-    error("too many input arguments");
-end
-id = argin{1};
-response = argin{2};
-AssertValidId(id);
-if staircase(id).isDone
-    success = 1;
-    isDone = 1;
-    reversal = 0;
-elseif ~staircase(id).inTrial
-    success = 0;
-    isDone = staircase(id).isDone;
-    reversal = 0;
-elseif response < 0 || response > numel(staircase(id).steps)
-    error(["invalid response code; for staircase %d, must be in range " ...
-           "[0, %d]"], id, numel(staircase(id).steps));
-else
-    reversal = 0;
-    % reset staircase
-    staircase(id).inTrial = 0;
-    % extract info from staircase (to reduce repeated struct lookups)
-    ctrack = staircase(id).currentTrack;
-    curval = staircase(id).tracks(ctrack).value;
-    lastStepDir = staircase(id).tracks(ctrack).lastStepDir;
-    label = staircase(id).tracks(ctrack).label;
 
-    % store staircase value and response for this trial
-    n = staircase(id).tracks(ctrack).nTrials + 1;
-    if n > numel(staircase(id).tracks(ctrack).values)
-        % need more room in values and responses array
-        x = nan(n + nTrialsBase - 1, 1);
-        x(1:numel(staircase(id).tracks(ctrack).values)) = ...
-            staircase(id).tracks(ctrack).values;
-        staircase(id).tracks(ctrack).values = x;
-        x = nan(n + nTrialsBase - 1, 1);
-        x(1:numel(staircase(id).tracks(ctrack).responses)) = ...
-            staircase(id).tracks(ctrack).responses;
-        staircase(id).tracks(ctrack).responses = x;
-        if debug >= 1
-            fprintf("%s: expanded data matrix to length %d\n", ...
-                    mfilename, numel(x));
-        end
-    end
-    staircase(id).tracks(ctrack).values(n) = curval;
-    staircase(id).tracks(ctrack).responses(n) = response;
-    staircase(id).tracks(ctrack).nTrials = n;
-
-    % update staircase only if there was a valid response
-    if response ~= 0
-        % compute step and step direction
-        step = staircase(id).steps(response);
-        stepDir = sign(step); % could be zero, if step is zero
-        if debug >= 2
-            fprintf("%s: took step of %0.3f on staircase %d, track %d\n", ...
-                    mfilename, step, id, label);
-        end
-        % check for reversal
-        if ~isempty(lastStepDir) && stepDir ~= 0 && stepDir ~= lastStepDir
-            if debug >= 2
-                fprintf("%s: reversal on staircase %d, track %d\n", ...
-                        mfilename, id, label);
-            end
-            reversal = staircase(id).tracks(ctrack).counter + 1;
-            staircase(id).tracks(ctrack).reversals(reversal) = curval;
-            staircase(id).tracks(ctrack).counter = reversal;
-            staircase(id).progress = staircase(id).progress + 1;
-        end
-        % update staircase value
-        if stepDir ~= 0
-            newval = curval + step;
-            if ~isempty(staircase(id).range)
-                range = staircase(id).range;
-                if newval > max(range), newval = max(range); end
-                if newval < min(range), newval = min(range); end
-            end
-            staircase(id).tracks(ctrack).lastStepDir = stepDir;
-            staircase(id).tracks(ctrack).value = newval;
-        end
-        staircase(id).lastTrack = ctrack;
-    end
-
-    % clean out completed tracks
-    if staircase(id).tracks(ctrack).counter >= staircase(id).nReversals
-        % this track is done
-        if debug >= 1
-            fprintf("%s: completed track %d for staircase %d\n", ...
-                    mfilename, label, id);
-        end
-        nTracksRemaining = staircase(id).nTracksRemaining;
-        if ctrack ~= nTracksRemaining
-            % move this track to the end of the list so the active ones are
-            % at the beginning
-            tmp = staircase(id).tracks(nTracksRemaining);
-            staircase(id).tracks(nTracksRemaining) = ...
-                staircase(id).tracks(ctrack);
-            staircase(id).tracks(ctrack) = tmp;
-        end
-        staircase(id).nTracksRemaining = nTracksRemaining - 1;
-        staircase(id).lastTrack = 0;
-    end
-    if debug >= 2
-        fprintf("%s: ended trial for staircase %d, track %d\n", ...
-                mfilename, id, label);
-    end
-    isDone = (staircase(id).nTracksRemaining == 0);
-    if isDone
-        FinalizeStaircase(id);
-    end
-    staircase(id).currentTrack = 0;
-    success = 1;
-end
-argout = {success, isDone, reversal};
-end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -667,92 +570,188 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Private support functions
 
-function FinalizeStaircase (id)
+function [isDone, reversal] = UpdateStaircase (index, response)
+    global _staircaserPar;
+    reversal = 0;
 
-    staircase(id).reversals = GatherReversals(id);
-    staircase(id).values = GatherValues(id);
-    staircase(id).responses = GatherResponses(id);
-    staircase(id).finalValue = ComputeFinalValue(id);
-    staircase(id).isDone = 1;
-    staircase(id).tracks = [];
+    ## extract info from staircase
+    staircase = _staircaserPar.staircase(index);
+    ctrack = staircase.currentTrack;
+    track = staircase.tracks(ctrack);
+    curval = track.value;
+    lastStepDir = track.lastStepDir;
+    label = track.label;
+    nTrialsBase = _staircaserPar.nTrialsBase;
 
-end
+    ## reset staircase
+    staircase.inTrial = 0;
+    ## expand trial vectors, if necessary
+    n = track.nTrials + 1;
+    if (n > numel(track.values))
+        ## need more room in values and responses array
+        track.values = [track.values, nan(nTrialsBase, 1)];
+        track.responses = [track.responses, nan(nTrialsBase, 1)];
+        if (_staircaserPar.debug >= 1)
+            fprintf("%s: expanded data matrix to length %d\n", mfilename,
+                    numel(track.values));
+        endif
+    endif
 
+    ## store staircase value and response for this trial
+    track.values(n) = curval;
+    track.responses(n) = response;
+    track.nTrials = n;
 
-function rev = GatherReversals (id)
-
-    AssertValidId(id);
-
-    rev = zeros(staircase(id).nReversals, staircase(id).nTracks);
-    for t = 1:size(rev, 2)
-        rev(:, t) = staircase(id).tracks(t).reversals;
-    end
-
-end
-
-
-function val = GatherValues (id)
-
-    AssertValidId(id);
-
-    nTracks = staircase(id).nTracks;
-    nTrials = zeros(nTracks, 1);
-    for t = 1:nTracks
-        nTrials(t) = staircase(id).tracks(t).nTrials;
-    end
-    val = nan(max(nTrials), nTracks);
-    for t = 1:nTracks
-        if nTrials(t) > 0
-            val(1:nTrials(t), t) = ...
-                staircase(id).tracks(t).values(1:nTrials(t));
+    ## update staircase only if there was a valid response
+    if (response != 0)
+        ## compute step and step direction
+        step = staircase.steps(response);
+        stepDir = sign(step); % could be zero, if step is zero
+        if (_staircaserPar.debug >= 2)
+            fprintf("%s: took step of %0.3f on staircase %d, track %d\n",
+                    mfilename, step, _staircaserPar.idList(index), label);
+        endif
+        ## check for reversal
+        if (!isempty(lastStepDir) && stepDir != 0 && stepDir != lastStepDir)
+            if (_staircaserPar.debug >= 2)
+                fprintf("%s: reversal on staircase %d, track %d\n", ...
+                        mfilename, _staircaserPar.idList(index), label);
+            endif
+            reversal = track.counter + 1;
+            track.reversals(reversal) = curval;
+            track.counter = reversal;
+            staircase.progress = staircase.progress + 1;
         end
-    end
+        ## update staircase value
+        if (stepDir != 0)
+            newval = curval + step;
+            if (!isempty(staircase.range))
+                range = staircase.range;
+                if (newval > max(range))
+                    newval = max(range);
+                endif
+                if (newval < min(range))
+                    newval = min(range);
+                endif
+            endif
+            track.lastStepDir = stepDir;
+            track.value = newval;
+        endif
+        staircase.lastTrack = ctrack;
+    endif
 
-end
+    ## restore track to staircase variable
+    staircase.tracks(ctrack) = track;
+
+    ## clean out completed tracks
+    if track.counter >= staircase.nReversals
+        ## this track is done
+        if (_staircaserPar.debug >= 1)
+            fprintf("%s: completed track %d for staircase %d\n", ...
+                    mfilename, label, _staircaserPar.idList(index));
+        endif
+        nTracksRemaining = staircase.nTracksRemaining;
+        if (ctrack != nTracksRemaining)
+            ## move this track to the end of the list so the active ones
+            ## are at the beginning
+            tmp = staircase.tracks(nTracksRemaining);
+            staircase.tracks(nTracksRemaining) = staircase.tracks(ctrack);
+            staircase.tracks(ctrack) = tmp;
+        endif
+        staircase.nTracksRemaining = nTracksRemaining - 1;
+        staircase.lastTrack = 0;
+    endif
+    if (_staircaserPar.debug >= 2)
+        fprintf("%s: ended trial for staircase %d, track %d\n", ...
+                mfilename, _staircaserPar.idList(index), label);
+    endif
+    staircase.currentTrack = 0;
+    isDone = (staircase.nTracksRemaining == 0);
+
+    ## restore staircase to global variable
+    _staircaserPar.staircase(index) = staircase;
+
+    ## close out staircase if done
+    if (isDone)
+        FinalizeStaircase(index);
+    endif
+    success = 1;
+endfunction
 
 
-function resp = GatherResponses (id)
+function FinalizeStaircase (index)
+    global _staircaserPar;
+    _staircaserPar.staircase(index).reversals = GatherReversals(index);
+    _staircaserPar.staircase(index).values = GatherValues(index);
+    _staircaserPar.staircase(index).responses = GatherResponses(index);
+    _staircaserPar.staircase(index).finalValue = ComputeFinalValue(index);
+    _staircaserPar.staircase(index).isDone = 1;
+    _staircaserPar.staircase(index).tracks = [];
+endfunction
 
-    AssertValidId(id);
 
-    nTracks = staircase(id).nTracks;
+function rev = GatherReversals (index)
+    global _staircaserPar;
+    rev = zeros(_staircaserPar.staircase(index).nReversals,
+                _staircaserPar.staircase(index).nTracks);
+    for (t = 1:size(rev, 2))
+        rev(:, t) = _staircaserPar.staircase(index).tracks(t).reversals;
+    endfor
+endfunction
+
+
+function val = GatherValues (index)
+    global _staircaserPar;
+    nTracks = _staircaserPar.staircase(index).nTracks;
     nTrials = zeros(nTracks, 1);
-    for t = 1:nTracks
-        nTrials(t) = staircase(id).tracks(t).nTrials;
-    end
+    for (t = 1:nTracks)
+        nTrials(t) = _staircaserPar.staircase(index).tracks(t).nTrials;
+    endfor
+    val = nan(max(nTrials), nTracks);
+    for (t = 1:nTracks)
+        if (nTrials(t) > 0)
+            val(1:nTrials(t), t) = ...
+                _staircaserPar.staircase(index).tracks(t).values(1:nTrials(t));
+        endif
+    endfor
+endfunction
+
+
+function resp = GatherResponses (index)
+    global _staircaserPar;
+    nTracks = _staircaserPar.staircase(index).nTracks;
+    nTrials = zeros(nTracks, 1);
+    for (t = 1:nTracks)
+        nTrials(t) = _staircaserPar.staircase(index).tracks(t).nTrials;
+    endfor
     resp = nan(max(nTrials), nTracks);
-    for t = 1:nTracks
+    for (t = 1:nTracks)
         if nTrials(t) > 0
             resp(1:nTrials(t), t) = ...
-                staircase(id).tracks(t).responses(1:nTrials(t));
-        end
-    end
+                _staircaserPar.staircase(index).tracks(t).responses(1:nTrials(t));
+        endif
+    endfor
+endfunction
 
-end
 
-
-function finalValue = ComputeFinalValue (id)
-
-    AssertValidId(id);
-
-    if isempty(staircase(id).reversals)
-        rev = GatherReversals(id);
+function finalValue = ComputeFinalValue (index)
+    global _staircaserPar;
+    if (isempty(_staircaserPar.staircase(index).reversals))
+        rev = GatherReversals(index);
     else
-        rev = staircase(id).reversals;
-    end
-
-    drop = staircase(id).nReversalsDropped;
-    if drop > 0
+        rev = _staircaserPar.staircase(index).reversals;
+    endif
+    drop = _staircaserPar.staircase(index).nReversalsDropped;
+    if (drop > 0)
         rev = rev(drop+1:end, :);
-    end
+    endif
     rev = reshape(rev, [numel(rev), 1]);
-    if all(isnan(rev))
+    if (all(isnan(rev)))
         finalValue = [];
     else
-        finalValue = mean(rev(~isnan(rev)));
-    end
-    
-end
+        finalValue = mean(rev(!isnan(rev)));
+    endif
+endfunction
 
 
 function AssertValidId (id)
