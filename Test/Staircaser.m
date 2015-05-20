@@ -239,6 +239,7 @@ function argout = StaircaserDelete(argin)
             _staircaserPar.staircase(index:(end-1)) = _staircaserPar.staircase((index+1):end);
             _staircaserPar.staircase(end) = [];
             _staircaserPar.idList(index:(end-1)) = _staircaserPar.idList((index+1):end);
+            _staircaserPar.idList(end) = [];
             success(i) = 1;
             if (_staircaserPar.debug >= 1)
                 fprintf("%s: deleted staircase %d\n", mfilename, id);
