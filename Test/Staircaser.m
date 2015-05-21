@@ -755,10 +755,11 @@ endfunction
 
 
 function AssertValidId (id)
-    if ~isnumeric(id) || id < 1 || id > numel(idList) || idList(id) == 0
+    global _staircaserPar;
+    if (!isnumeric(id) || !any(id == _staircaserPar.idList))
         error("invalid staircase id");
-    end
-end
+    endif
+endfunction
 
 
 ### Local Variables:
