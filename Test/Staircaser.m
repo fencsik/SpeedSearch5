@@ -398,81 +398,55 @@ function argout = StaircaserPlot(argin)
 endfunction
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("Progress")
+###########################################################################
+### Staircaser("Progress")
 
-function argout = StaircaserProgress(argin)
-
+function argout = StaircaserProgress (argin)
+    global _staircaserPar;
+    helpText = sprintf(["\n[progress, stepsize] = ",
+                        "Staircaser(\"Progress\", id);\n\n"]);
+    if (CheckForHelpRequest(helpText));
+        argout({});
+        return;
+    endif
     argout = {[]};
-
-    function Help
-        fprintf(["\n[progress, stepsize] = " ...
-                 "Staircaser(\"Progress\", id);\n\n"]);
-    end
-    if printHelp
-        Help;
-        return
-    end
-
-    % process input args
+    ## process input args
     nargs = numel(argin);
-    if nargs < 1
-        Help;
-        error("not enough input arguments");
-    elseif nargs > 1
-        Help;
-        error("too many input arguments");
-    end
+    CheckNumberOfInputArguments(nargs, 1, 1, helpText);
     id = argin{1};
-
-    % error checking
     AssertValidId(id);
-
-    progress = staircase(id).progress ./ staircase(id).progressTotal;
-    stepsize = 1 ./ staircase(id).progressTotal;
+    index = find(id == _staircaserPar.idList);
+    progress = _staircaserPar.staircase(index).progress ./ ...
+               _staircaserPar.staircase(index).progressTotal;
+    stepsize = 1 ./ _staircaserPar.staircase(index).progressTotal;
     argout = {progress, stepsize};
-
-end
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("List")
-
-function argout = StaircaserList(argin)
-
-function Help
-fprintf(["\nid = Staircaser(\"List\");\n\n"]);
-end
-
-if printHelp
-    Help;
-    argout = {[]};
-    return
-end
-
-% process input arguments
-nargs = numel(argin);
-if nargs > 0
-    Help;
-    error("too many input arguments");
-end
-% process output arguments
-if nOutputArgs > 1
-    Help;
-    error("too many output arguments");
-end
-
-if isempty(idList) || all(idList == 0)
-    argout = {[]};
-else
-    argout = {find(idList == 1)};
-end
-
-end
+endfunction
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Private support functions
+###########################################################################
+### Staircaser("List")
+
+function argout = StaircaserList (argin)
+    global _staircaserPar;
+    helpText = sprintf(["\nid = Staircaser(\"List\");\n\n"]);
+    if (CheckForHelpRequest(helpText));
+        argout({});
+        return;
+    endif
+    ## process input args
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 0, 0, helpText);
+    CheckNumberOfOutputArguments(_staircaserPar.nOutputArgs, 0, 1, helpText);
+    if (isempty(_staircaserPar.idList))
+        argout = {[]};
+    else
+        argout = {_staircaserPar.idList};
+    endif
+endfunction
+
+
+###########################################################################
+### Private support functions
 
 function [isDone, reversal] = UpdateStaircase (index, response)
     global _staircaserPar;
