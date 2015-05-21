@@ -386,89 +386,16 @@ function argout = StaircaserGetReversals(argin)
 endfunction
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("Plot")
+###########################################################################
+### Staircaser("Plot")
 
 function argout = StaircaserPlot(argin)
-
-argout = {[]};
-
-function Help
-fprintf("\nStaircaser(\"Plot\", id, title);\n\n");
-end
-if printHelp
-    Help;
-    return
-end
-
-% process input args
-nargs = numel(argin);
-if nargs < 1
-    Help;
-    error("not enough input arguments");
-elseif nargs > 2
-    Help;
-    error("too many input arguments");
-end
-id = argin{1};
-if nargs < 2
-    plotTitle = [];
-else
-    plotTitle = argin{2};
-end
-
-% error checking
-AssertValidId(id);
-
-% gather data
-if isempty(staircase(id).values)
-    y = GatherValues(id);
-else
-    y = staircase(id).values;
-end
-if isempty(staircase(id).finalValue)
-    final = ComputeFinalValue(id);
-else
-    final = staircase(id).finalValue;
-end
-nTracks = size(y, 2);
-nTrials = zeros(nTracks, 1);
-for t = 1:nTracks
-    nTrials(t) = max(find(~isnan(y(:, t))));
-end
-if ~any(nTrials > 0)
-    warning("no data to plot");
-    return;
-end
-
-% plot first track with data to plot, and establish axes, etc.
-first = min(find(nTrials > 0));
-figure;
-plot(1:nTrials(first), y(1:nTrials(first), first), ...
-     "-o", "LineWidth", 2, "MarkerFaceColor", "w");
-hold all;
-if isempty(staircase(id).range)
-    axis([1, max(nTrials)+1, min(min(y)), max(max(y))]);
-else
-    axis([1, max(nTrials)+1, ...
-          min(staircase(id).range), max(staircase(id).range)]);
-end        
-if ~isempty(plotTitle), title(plotTitle); end
-
-% plot any remaining tracks that have data
-offset = 0;
-for t = first+1:nTracks
-    if nTrials(t) == 0, continue; end
-    offset = offset + .1;
-    plot(offset + (1:nTrials(t)), y(1:nTrials(t), t), ...
-         "-o", "LineWidth", 2, "MarkerFaceColor", "w");
-end
-
-% plot final value
-plot([1, max(nTrials)+1], [final, final], "k-", "LineWidth", 3);
-hold off;
-
-end
+    global _staircaserPar;
+    if (_staircaserPar.debug >= 1)
+        printf("Staircaser(\"Plot\") is not implemented\n");
+    endif
+    argout = {};
+endfunction
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
