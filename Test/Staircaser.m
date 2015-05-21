@@ -362,38 +362,28 @@ function argout = StaircaserFinalValue (argin)
 endfunction
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("GetReversals")
+###########################################################################
+### Staircaser("GetReversals")
 
 function argout = StaircaserGetReversals(argin)
-
-function Help
-fprintf("\nreversals = Staircaser(\"GetReversals\", id);\n\n");
-end
-if printHelp
-    Help;
-    argout = {[]};
-    return
-end
-
-nargs = numel(argin);
-if nargs < 1
-    Help;
-    error("not enough input arguments");
-elseif nargs > 1
-    Help;
-    error("too many input arguments");
-end
-
-id = argin{1};
-AssertValidId(id);
-if isempty(staircase(id).reversals)
-    reversals = GatherReversals(id);
-else
-    reversals = staircase(id).reversals;
-end
-argout = {reversals};
-end
+    global _staircaserPar;
+    helpText = sprintf("\nreversals = Staircaser(\"GetReversals\", id);\n\n");
+    if (CheckForHelpRequest(helpText));
+        argout({});
+        return;
+    endif
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 1, 1, helpText);
+    id = argin{1};
+    AssertValidId(id);
+    index = find(id == _staircaserPar.idList);
+    if (isempty(_staircaserPar.staircase(index).reversals))
+        reversals = GatherReversals(index);
+    else
+        reversals = _staircaserPar.staircase(index).reversals;
+    endif
+    argout = {reversals};
+endfunction
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
