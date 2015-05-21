@@ -57,6 +57,12 @@ function RunBlock ()
     aspectratio = 1.0;
     ## Angle in degrees
     angle = 0;
+    ## Timing checks
+    tLastFlip = NA;
+    maxFrameDur = -1;
+    sumFrameDur = 0;
+    maxPrepDur = -1;
+    nFrames = 0;
     parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, 2);
     gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
     KbReleaseWait();
@@ -65,16 +71,37 @@ function RunBlock ()
     tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
     phase = phase - phaseStep;
     while (1)
+        tPrepStart = GetSecs();
         parameters(1, :) = mod(parameters(1, :) + phaseStep, 360);
         Screen('FillRect', par.mainWindow, 128);
         Screen('DrawTextures', par.mainWindow, [gabortex, gabortex], [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, ...
                parameters);
+        tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
+        if (!isna(tLastFlip))
+            dur = t - tLastFlip;
+            sumFrameDur = sumFrameDur + dur;
+            nFrames = nFrames + 1;
+            if (dur > maxFrameDur)
+                maxFrameDur = dur;
+            endif
+            dur = tPrepEnd - tPrepStart;
+            if (dur > maxPrepDur)
+                maxPrepDur = dur;
+            endif
+        endif
+        tLastFlip = t;
         if (KbCheck)
            break;
         endif
     endwhile
+    if (nFrames > 0)
+        printf("%0.0f frames completed\n", nFrames);
+        printf("Average frame duration = %0.6f ms\n", 1000 * sumFrameDur / nFrames);
+        printf("Maximum frame duration = %0.6f ms\n", 1000 * maxFrameDur);
+        printf("Maximum prep duration  = %0.6f ms\n", 1000 * maxPrepDur);
+    endif
 endfunction
 
 function SaveBlockData ()
