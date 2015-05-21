@@ -338,41 +338,28 @@ function argout = StaircaserEndTrial (argin)
     argout = {success, isDone, reversal};
 endfunction # EndTrial
 
+###########################################################################
+### Staircaser("FinalValue")
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Staircaser("FinalValue")
-
-function argout = StaircaserFinalValue(argin)
-
-function Help
-fprintf("\nvalue = Staircaser(\"FinalValue\", id);\n\n");
-end
-if printHelp
-    Help;
-    argout = {[]};
-    return
-end
-
-nargs = numel(argin);
-if nargs < 1
-    Help;
-    error("not enough input arguments");
-elseif nargs > 1
-    Help;
-    error("too many input arguments");
-end
-id = argin{1};
-AssertValidId(id);
-
-if isempty(staircase(id).finalValue)
-    value = ComputeFinalValue(id);
-else
-    value = staircase(id).finalValue;
-end
-argout = {value};
-end
+function argout = StaircaserFinalValue (argin)
+    global _staircaserPar;
+    helpText = sprintf("\nvalue = Staircaser(\"FinalValue\", id);\n\n");
+    if (CheckForHelpRequest(helpText));
+        argout({});
+        return;
+    endif
+    nargs = numel(argin);
+    CheckNumberOfInputArguments(nargs, 1, 1, helpText);
+    id = argin{1};
+    AssertValidId(id);
+    index = find(id == _staircaserPar.idList);
+    if (isempty(_staircaserPar.staircase(index).finalValue))
+        value = ComputeFinalValue(index);
+    else
+        value = _staircaserPar.staircase(index).finalValue;
+    endif
+    argout = {value};
+endfunction
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
