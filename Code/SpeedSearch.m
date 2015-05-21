@@ -34,28 +34,28 @@ endfunction
 
 function RunBlock ()
     global par
-    # Animation speed
+    ## Animation speed
     nRefreshesPerFrame = 2;
-    # Size of the underlying sinewave patch
+    ## Size of the underlying sinewave patch
     par.gaborSize = 200;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
-    # Define two destination rects
+    ## Define two destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
     par.destRect = [OffsetRect(centeredGaborRect, -1 * par.gaborSize, 0)', ...
                     OffsetRect(centeredGaborRect, 1 * par.gaborSize, 0)'];
-    # Gabor drift speed
+    ## Gabor drift speed
     phaseStep = [40, 70];
-    # Starting phase
+    ## Starting phase
     phase = 0;
-    # Gabor frequency (between about .05 and .2 is reasonable)
+    ## Gabor frequency (between about .05 and .2 is reasonable)
     freq = .08;
-    # Size of gaussian envelope
+    ## Size of gaussian envelope
     spatialconstant = 20;
-    # Sorta like contrast, but not exactly
+    ## Sorta like contrast, but not exactly
     contrast = 100;
-    # Ignored unless a parameter is set in the gabor code
+    ## Ignored unless a parameter is set in the gabor code
     aspectratio = 1.0;
-    # Angle in degrees
+    ## Angle in degrees
     angle = 0;
     parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, 2);
     gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
