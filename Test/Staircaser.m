@@ -2,14 +2,14 @@ function varargout = Staircaser (command, varargin)
     global _staircaserPar;
     if (!IsStaircaserInitialized())
         InitializeStaircaser();
-    endif
+    end
     _staircaserPar.nOutputArgs = nargout;
 
     _staircaserPar.printHelp = 0;
     if command(end) == '?'
         _staircaserPar.printHelp = 1;
         command = command(1:end-1);
-    endif
+    end
 
     switch command
         case 'Create'
@@ -41,8 +41,8 @@ function varargout = Staircaser (command, varargin)
         otherwise
             varargout = [];
             error('Staircaser: command %s not recognized', command);
-    endswitch
-endfunction
+    end
+end
 
 function InitializeStaircaser ()
     global _staircaserPar;
@@ -53,8 +53,8 @@ function InitializeStaircaser ()
     _staircaserPar.idList = [];
     if (_staircaserPar.debug >= 1)
         fprintf('%s: Initialized staircaser\n', mfilename);
-    endif
-endfunction
+    end
+end
 
 function tf = IsStaircaserInitialized()
     global _staircaserPar;
@@ -62,8 +62,8 @@ function tf = IsStaircaserInitialized()
     if (exist('_staircaserPar', 'var') && isstruct(_staircaserPar) &&
         isfield(_staircaserPar, 'staircase') && isstruct(_staircaserPar.staircase))
         tf = 1;
-    endif
-endfunction
+    end
+end
 
 function id = FindUnusedStaircaseID ()
     global _staircaserPar;
@@ -71,33 +71,33 @@ function id = FindUnusedStaircaseID ()
     if (isempty(idList))
         id = 1;
         return;
-    endif
+    end
     ## find the first unused number
     for (i = 1:max(idList))
         if (!any(i == idList))
             id = i;
             return;
-        endif
-    endfor
+        end
+    end
     ## if we've gotten here, then all numbers up to max(idList) are in use
     id = max(idList) + 1;
-endfunction
+end
 
 function CheckNumberOfInputArguments(nArgs, minArgs, maxArgs, helpText=[])
     if (nArgs < minArgs)
         error('%s\nNot enough input arguments', helpText);
     elseif (nArgs > maxArgs)
         error('%s\nToo many input arguments', helpText);
-    endif
-endfunction
+    end
+end
 
 function CheckNumberOfOutputArguments(nArgs, minArgs, maxArgs, helpText=[])
     if (nArgs < minArgs)
         error('%s\nNot enough output arguments', helpText);
     elseif (nArgs > maxArgs)
         error('%s\nToo many output arguments', helpText);
-    endif
-endfunction
+    end
+end
 
 function helpRequested = CheckForHelpRequest (helpText)
     global _staircaserPar;
@@ -105,8 +105,8 @@ function helpRequested = CheckForHelpRequest (helpText)
     if (_staircaserPar.printHelp)
         fprintf('%s', helpText);
         helpRequested = 1;
-    endif
-endfunction
+    end
+end
 
 ###########################################################################
 ### Staircaser('Create')
@@ -118,7 +118,7 @@ function argout = StaircaserCreate(argin)
     if (CheckForHelpRequest(helpText))
         argout = {[]};
         return;
-    endif
+    end
 
     ## process input arguments
     nargs = numel(argin);
@@ -126,7 +126,7 @@ function argout = StaircaserCreate(argin)
     type = argin{1}(1);
     if (type != 1)
         error('staircase types other than 1 are not yet supported');
-    endif
+    end
     nReversals = argin{2}(1);
     initialValue = argin{3}(1);
     steps = argin{4};
@@ -134,18 +134,18 @@ function argout = StaircaserCreate(argin)
         nReversalsDropped = 0;
     else
         nReversalsDropped = argin{5}(1);
-    endif
+    end
     if nargs < 6 || isempty(argin{6})
         nTracks = 1;
     else
         nTracks = argin{6}(1);
         nTracks = nTracks(1);
-    endif
+    end
     if nargs < 7 || numel(argin{7}) < 2
         range = [];
     else
         range = [min(argin{7}), max(argin{7})];
-    endif
+    end
     ## process output arguments
     CheckNumberOfOutputArguments(_staircaserPar.nOutputArgs, 0, 1, helpText);
 
@@ -156,7 +156,7 @@ function argout = StaircaserCreate(argin)
         error('no negative steps');
     elseif nReversals == nReversalsDropped
         error('nReversalsDropped = nReversals, so no reversals would be used');
-    endif
+    end
 
     staircase = struct();
     staircase.type = type;
@@ -179,7 +179,7 @@ function argout = StaircaserCreate(argin)
     scLabels = cell(nTracks, 1);
     for i = 1:nTracks
         scLabels{i} = i;
-    endfor
+    end
     staircase.tracks = struct('label', scLabels,
                               'value', initialValue,
                               'counter', 0,
@@ -198,14 +198,14 @@ function argout = StaircaserCreate(argin)
                 nReversals, nReversalsDropped, nTracks);
         fprintf('%s: and range of \n', mfilename);
         disp(range);
-    endif
+    end
     if _staircaserPar.debug >= 2
         for i = 1:nTracks
             disp(staircase.tracks(i));
-        endfor
-    endif
+        end
+    end
     argout = {id};
-endfunction
+end
 
 ###########################################################################
 ### Staircaser('Delete')
@@ -216,7 +216,7 @@ function argout = StaircaserDelete(argin)
     if (CheckForHelpRequest(helpText))
         argout = {[]};
         return;
-    endif
+    end
 
     ## process input arguments
     nargs = numel(argin);
@@ -243,11 +243,11 @@ function argout = StaircaserDelete(argin)
             success(i) = 1;
             if (_staircaserPar.debug >= 1)
                 fprintf('%s: deleted staircase %d\n', mfilename, id);
-            endif
-        endif
-    endfor
+            end
+        end
+    end
     argout = {success};
-endfunction
+end
 
 ###########################################################################
 ### Staircaser('StartTrial')
@@ -258,7 +258,7 @@ function argout = StaircaserStartTrial(argin)
     if (CheckForHelpRequest(helpText))
         argout = {[]};
         return;
-    endif
+    end
 
     ## process input arguments
     nargs = numel(argin);
@@ -275,7 +275,7 @@ function argout = StaircaserStartTrial(argin)
         value = _staircaserPar.staircase(index).finalValue;
         if (_staircaserPar.debug >= 1)
             fprintf('%s: staircase %d is complete\n', mfilename, id);
-        endif
+        end
     elseif (_staircaserPar.staircase(index).inTrial)
         success = 0;
         label = [];
@@ -283,7 +283,7 @@ function argout = StaircaserStartTrial(argin)
         if (_staircaserPar.debug >= 2)
             fprintf('%s: trial already started for staircase %d\n', ...
                     mfilename, id);
-        endif
+        end
     else
         _staircaserPar.staircase(index).inTrial = 1;
         ## pick the next remaining track
@@ -296,10 +296,10 @@ function argout = StaircaserStartTrial(argin)
         if (_staircaserPar.debug >= 2)
             fprintf('%s: started trial for staircase %d, track %d\n', ...
                     mfilename, id, label);
-        endif
-    endif
+        end
+    end
     argout = {success, value, label};
-endfunction # StartTrial
+end # StartTrial
 
 
 ###########################################################################
@@ -312,7 +312,7 @@ function argout = StaircaserEndTrial (argin)
     if (CheckForHelpRequest(helpText))
         argout = {[]};
         return;
-    endif
+    end
 
     nargs = numel(argin);
     CheckNumberOfInputArguments(nargs, 2, 2, helpText);
@@ -334,9 +334,9 @@ function argout = StaircaserEndTrial (argin)
     else
         [isDone, reversal] = UpdateStaircase(index, response);
         success = 1;
-    endif
+    end
     argout = {success, isDone, reversal};
-endfunction # EndTrial
+end # EndTrial
 
 ###########################################################################
 ### Staircaser('FinalValue')
@@ -347,7 +347,7 @@ function argout = StaircaserFinalValue (argin)
     if (CheckForHelpRequest(helpText));
         argout({});
         return;
-    endif
+    end
     nargs = numel(argin);
     CheckNumberOfInputArguments(nargs, 1, 1, helpText);
     id = argin{1};
@@ -357,9 +357,9 @@ function argout = StaircaserFinalValue (argin)
         value = ComputeFinalValue(index);
     else
         value = _staircaserPar.staircase(index).finalValue;
-    endif
+    end
     argout = {value};
-endfunction
+end
 
 
 ###########################################################################
@@ -371,7 +371,7 @@ function argout = StaircaserGetReversals(argin)
     if (CheckForHelpRequest(helpText));
         argout({});
         return;
-    endif
+    end
     nargs = numel(argin);
     CheckNumberOfInputArguments(nargs, 1, 1, helpText);
     id = argin{1};
@@ -381,9 +381,9 @@ function argout = StaircaserGetReversals(argin)
         reversals = GatherReversals(index);
     else
         reversals = _staircaserPar.staircase(index).reversals;
-    endif
+    end
     argout = {reversals};
-endfunction
+end
 
 
 ###########################################################################
@@ -393,9 +393,9 @@ function argout = StaircaserPlot(argin)
     global _staircaserPar;
     if (_staircaserPar.debug >= 1)
         fprintf('Staircaser(''Plot'') is not implemented\n');
-    endif
+    end
     argout = {};
-endfunction
+end
 
 
 ###########################################################################
@@ -408,7 +408,7 @@ function argout = StaircaserProgress (argin)
     if (CheckForHelpRequest(helpText));
         argout({});
         return;
-    endif
+    end
     argout = {[]};
     ## process input args
     nargs = numel(argin);
@@ -420,7 +420,7 @@ function argout = StaircaserProgress (argin)
                _staircaserPar.staircase(index).progressTotal;
     stepsize = 1 ./ _staircaserPar.staircase(index).progressTotal;
     argout = {progress, stepsize};
-endfunction
+end
 
 
 ###########################################################################
@@ -432,7 +432,7 @@ function argout = StaircaserList (argin)
     if (CheckForHelpRequest(helpText));
         argout({});
         return;
-    endif
+    end
     ## process input args
     nargs = numel(argin);
     CheckNumberOfInputArguments(nargs, 0, 0, helpText);
@@ -441,8 +441,8 @@ function argout = StaircaserList (argin)
         argout = {[]};
     else
         argout = {_staircaserPar.idList};
-    endif
-endfunction
+    end
+end
 
 
 ###########################################################################
@@ -472,8 +472,8 @@ function [isDone, reversal] = UpdateStaircase (index, response)
         if (_staircaserPar.debug >= 1)
             fprintf('%s: expanded data matrix to length %d\n', mfilename,
                     numel(track.values));
-        endif
-    endif
+        end
+    end
 
     ## store staircase value and response for this trial
     track.values(n) = curval;
@@ -488,13 +488,13 @@ function [isDone, reversal] = UpdateStaircase (index, response)
         if (_staircaserPar.debug >= 2)
             fprintf('%s: took step of %0.3f on staircase %d, track %d\n',
                     mfilename, step, _staircaserPar.idList(index), label);
-        endif
+        end
         ## check for reversal
         if (!isempty(lastStepDir) && stepDir != 0 && stepDir != lastStepDir)
             if (_staircaserPar.debug >= 2)
                 fprintf('%s: reversal on staircase %d, track %d\n', ...
                         mfilename, _staircaserPar.idList(index), label);
-            endif
+            end
             reversal = track.counter + 1;
             track.reversals(reversal) = curval;
             track.counter = reversal;
@@ -507,16 +507,16 @@ function [isDone, reversal] = UpdateStaircase (index, response)
                 range = staircase.range;
                 if (newval > max(range))
                     newval = max(range);
-                endif
+                end
                 if (newval < min(range))
                     newval = min(range);
-                endif
-            endif
+                end
+            end
             track.lastStepDir = stepDir;
             track.value = newval;
-        endif
+        end
         staircase.lastTrack = ctrack;
-    endif
+    end
 
     ## restore track to staircase variable
     staircase.tracks(ctrack) = track;
@@ -527,7 +527,7 @@ function [isDone, reversal] = UpdateStaircase (index, response)
         if (_staircaserPar.debug >= 1)
             fprintf('%s: completed track %d for staircase %d\n', ...
                     mfilename, label, _staircaserPar.idList(index));
-        endif
+        end
         nTracksRemaining = staircase.nTracksRemaining;
         if (ctrack != nTracksRemaining)
             ## move this track to the end of the list so the active ones
@@ -535,14 +535,14 @@ function [isDone, reversal] = UpdateStaircase (index, response)
             tmp = staircase.tracks(nTracksRemaining);
             staircase.tracks(nTracksRemaining) = staircase.tracks(ctrack);
             staircase.tracks(ctrack) = tmp;
-        endif
+        end
         staircase.nTracksRemaining = nTracksRemaining - 1;
         staircase.lastTrack = 0;
-    endif
+    end
     if (_staircaserPar.debug >= 2)
         fprintf('%s: ended trial for staircase %d, track %d\n', ...
                 mfilename, _staircaserPar.idList(index), label);
-    endif
+    end
     staircase.currentTrack = 0;
     isDone = (staircase.nTracksRemaining == 0);
 
@@ -552,9 +552,9 @@ function [isDone, reversal] = UpdateStaircase (index, response)
     ## close out staircase if done
     if (isDone)
         FinalizeStaircase(index);
-    endif
+    end
     success = 1;
-endfunction
+end
 
 
 function FinalizeStaircase (index)
@@ -565,7 +565,7 @@ function FinalizeStaircase (index)
     _staircaserPar.staircase(index).finalValue = ComputeFinalValue(index);
     _staircaserPar.staircase(index).isDone = 1;
     _staircaserPar.staircase(index).tracks = [];
-endfunction
+end
 
 
 function rev = GatherReversals (index)
@@ -574,8 +574,8 @@ function rev = GatherReversals (index)
                 _staircaserPar.staircase(index).nTracks);
     for (t = 1:size(rev, 2))
         rev(:, t) = _staircaserPar.staircase(index).tracks(t).reversals;
-    endfor
-endfunction
+    end
+end
 
 
 function val = GatherValues (index)
@@ -584,15 +584,15 @@ function val = GatherValues (index)
     nTrials = zeros(nTracks, 1);
     for (t = 1:nTracks)
         nTrials(t) = _staircaserPar.staircase(index).tracks(t).nTrials;
-    endfor
+    end
     val = nan(max(nTrials), nTracks);
     for (t = 1:nTracks)
         if (nTrials(t) > 0)
             val(1:nTrials(t), t) = ...
                 _staircaserPar.staircase(index).tracks(t).values(1:nTrials(t));
-        endif
-    endfor
-endfunction
+        end
+    end
+end
 
 
 function resp = GatherResponses (index)
@@ -601,15 +601,15 @@ function resp = GatherResponses (index)
     nTrials = zeros(nTracks, 1);
     for (t = 1:nTracks)
         nTrials(t) = _staircaserPar.staircase(index).tracks(t).nTrials;
-    endfor
+    end
     resp = nan(max(nTrials), nTracks);
     for (t = 1:nTracks)
         if nTrials(t) > 0
             resp(1:nTrials(t), t) = ...
                 _staircaserPar.staircase(index).tracks(t).responses(1:nTrials(t));
-        endif
-    endfor
-endfunction
+        end
+    end
+end
 
 
 function finalValue = ComputeFinalValue (index)
@@ -618,26 +618,26 @@ function finalValue = ComputeFinalValue (index)
         rev = GatherReversals(index);
     else
         rev = _staircaserPar.staircase(index).reversals;
-    endif
+    end
     drop = _staircaserPar.staircase(index).nReversalsDropped;
     if (drop > 0)
         rev = rev(drop+1:end, :);
-    endif
+    end
     rev = reshape(rev, [numel(rev), 1]);
     if (all(isnan(rev)))
         finalValue = [];
     else
         finalValue = mean(rev(!isnan(rev)));
-    endif
-endfunction
+    end
+end
 
 
 function AssertValidId (id)
     global _staircaserPar;
     if (!isnumeric(id) || !any(id == _staircaserPar.idList))
         error('invalid staircase id');
-    endif
-endfunction
+    end
+end
 
 
 ### Local Variables:
