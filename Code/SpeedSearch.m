@@ -42,9 +42,11 @@ function RunBlock ()
     ## Define two destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
     par.destRect = [OffsetRect(centeredGaborRect, -1 * par.gaborSize, 0)', ...
-                    OffsetRect(centeredGaborRect, 1 * par.gaborSize, 0)'];
+                    OffsetRect(centeredGaborRect, 1 * par.gaborSize, 0)', ...
+                    OffsetRect(centeredGaborRect, 0, -1 * par.gaborSize)', ...
+                    OffsetRect(centeredGaborRect, 0, 1 * par.gaborSize)'];
     ## Gabor drift speed
-    phaseStep = [40, 70];
+    phaseStep = [25, -25, 50, -50];
     ## Starting phase
     phase = 0;
     ## Gabor frequency (between about .05 and .2 is reasonable)
@@ -63,7 +65,7 @@ function RunBlock ()
     sumFrameDur = 0;
     maxPrepDur = -1;
     nFrames = 0;
-    parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, 2);
+    parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, 4);
     gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
     KbReleaseWait();
     Screen('FillRect', par.mainWindow, 128);
@@ -74,8 +76,8 @@ function RunBlock ()
         tPrepStart = GetSecs();
         parameters(1, :) = mod(parameters(1, :) + phaseStep, 360);
         Screen('FillRect', par.mainWindow, 128);
-        Screen('DrawTextures', par.mainWindow, [gabortex, gabortex], [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, ...
-               parameters);
+        Screen('DrawTextures', par.mainWindow, [gabortex, gabortex, gabortex, gabortex],
+               [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, parameters);
         tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
