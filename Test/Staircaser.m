@@ -52,7 +52,7 @@ function InitializeStaircaser ()
     _staircaserPar.staircase = struct();
     _staircaserPar.idList = [];
     if (_staircaserPar.debug >= 1)
-        printf('%s: Initialized staircaser\n', mfilename);
+        fprintf('%s: Initialized staircaser\n', mfilename);
     endif
 endfunction
 
@@ -103,7 +103,7 @@ function helpRequested = CheckForHelpRequest (helpText)
     global _staircaserPar;
     helpRequested = 0;
     if (_staircaserPar.printHelp)
-        printf('%s', helpText);
+        fprintf('%s', helpText);
         helpRequested = 1;
     endif
 endfunction
@@ -392,7 +392,7 @@ endfunction
 function argout = StaircaserPlot(argin)
     global _staircaserPar;
     if (_staircaserPar.debug >= 1)
-        printf('Staircaser(''Plot'') is not implemented\n');
+        fprintf('Staircaser(''Plot'') is not implemented\n');
     endif
     argout = {};
 endfunction
