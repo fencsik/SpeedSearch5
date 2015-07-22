@@ -176,6 +176,38 @@ function HandleInputArguments (varargin)
 endfunction
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Stimulus Drawing Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [x, y] = GetClusteredStimulusLocations (nStimuli)
+    global par;
+    %% need par.nStimuliPerCluster
+    nStimulusPositions = par.nClusters * par.nStimuliPerCluster;
+    if (nStimuli > nStimulusPositions)
+        error('clusters cannot support more than %d stimuli (%d requested)', ...
+              nStimulusPositions, nStimuli);
+    end
+    x = nan(nStimuli, 1);
+    y = x;
+    nClusters = ceil(nStimuli / par.nStimuliPerCluster);
+    clusterCenter = 2 * pi * rand;
+    interClusterSpacing = 2 * pi / par.nClusters;
+    interStimulusSpacing = 2 * pi / nPositions;
+    counter = 1;
+    for i = 1:nClusters
+        theta = clusterCenter + interStimulusSpacing * ...
+                ((1:par.nStimuliPerCluster) - (par.nStimuliPerCluster + 1) / 2);
+        for j = 1:par.nStimuliPerCluster
+            x(counter) = par.screenCenterX + par.displayRadius * sin(theta(j));
+            y(counter) = par.screenCenterY - par.displayRadius * cos(theta(j));
+            counter = counter + 1;
+        end
+        clusterCenter = clusterCenter + interClusterSpacing;
+    end
+end
+
+
 ### Local Variables:
 ### mode:Octave
 ### End:
