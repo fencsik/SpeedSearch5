@@ -188,7 +188,6 @@ endfunction
 
 function [x, y] = GetClusteredStimulusLocations (nStimuli)
     global par;
-    %% need par.nStimuliPerCluster
     nStimulusPositions = par.nClusters * par.nStimuliPerCluster;
     if (nStimuli > nStimulusPositions)
         error('clusters cannot support more than %d stimuli (%d requested)', ...
