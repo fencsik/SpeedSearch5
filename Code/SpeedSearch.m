@@ -125,6 +125,10 @@ function InitializePreGraphics ()
     AssertOpenGL();
     KbName('UnifyKeyNames');
     global par = struct();
+
+    par.nClusters = 3;
+    par.nStimuliPerCluster = 4;
+    par.displayRadius = 360;
 endfunction
 
 function InitializeGraphics ()
@@ -147,6 +151,8 @@ function InitializePostGraphics ()
     Screen('BlendFunction', par.mainWindow, GL_ONE, GL_ONE);
     #Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     HideCursor();
+
+    [par.screenCenterX, par.screenCenterY] = RectCenter(par.mainWindowRect);
 
     % calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
