@@ -129,6 +129,7 @@ function InitializePreGraphics ()
 
     par.nClusters = 3;
     par.nStimuliPerCluster = 4;
+    par.clusterSpacingDenominator = 16; % divides circle by this much
     par.displayRadius = 360;
 endfunction
 
@@ -199,7 +200,7 @@ function [x, y] = GetClusteredStimulusLocations (nStimuli)
     nClustersNeeded = ceil(nStimuli / par.nStimuliPerCluster);
     clusterCenter = 2 * pi * rand;
     interClusterSpacing = 2 * pi / par.nClusters;
-    interStimulusSpacing = 2 * pi / nPositions;
+    interStimulusSpacing = 2 * pi / par.clusterSpacingDenominator;
     counter = 1;
     for i = 1:nClustersNeeded
         theta = clusterCenter + interStimulusSpacing * ...
