@@ -40,12 +40,10 @@ function RunBlock ()
     par.gaborSize = 200;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
     nGabors = 12;
-    ## Define two destination rects
+    ## Define destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
-    par.destRect = [OffsetRect(centeredGaborRect, -1 * par.gaborSize, 0)', ...
-                    OffsetRect(centeredGaborRect, 1 * par.gaborSize, 0)', ...
-                    OffsetRect(centeredGaborRect, 0, -1 * par.gaborSize)', ...
-                    OffsetRect(centeredGaborRect, 0, 1 * par.gaborSize)'];
+    [x, y] = GetClusteredStimulusLocations(nGabors);
+    par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
     ## Gabor drift speed
     randomSign = randi(2, 1, nGabors);
     randomSign(randomSign == 2) = -1;
