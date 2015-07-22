@@ -196,12 +196,12 @@ function [x, y] = GetClusteredStimulusLocations (nStimuli)
     end
     x = nan(nStimuli, 1);
     y = x;
-    nClusters = ceil(nStimuli / par.nStimuliPerCluster);
+    nClustersNeeded = ceil(nStimuli / par.nStimuliPerCluster);
     clusterCenter = 2 * pi * rand;
     interClusterSpacing = 2 * pi / par.nClusters;
     interStimulusSpacing = 2 * pi / nPositions;
     counter = 1;
-    for i = 1:nClusters
+    for i = 1:nClustersNeeded
         theta = clusterCenter + interStimulusSpacing * ...
                 ((1:par.nStimuliPerCluster) - (par.nStimuliPerCluster + 1) / 2);
         for j = 1:par.nStimuliPerCluster
