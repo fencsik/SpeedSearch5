@@ -1,6 +1,6 @@
 function LoadSettings ()
-    # Tests code to load settings from a settings file.  Intended to be put
-    # directly into Psychtoolbox scripts.
+    % Tests code to load settings from a settings file.  Intended to be put
+    % directly into Psychtoolbox scripts.
     global par = struct();
     par.settingsFileName = {"Settings.txt", "Settings", ...
                             "settings.txt", "settings"};
@@ -19,7 +19,7 @@ function success = CloseFile(fid)
     end
 end
 
-####################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function LoadSettingsFile ()
     fid = FindAndOpenSettingsFile();
@@ -95,18 +95,18 @@ function value = ProcessValue(valueToken)
 endfunction
 
 function stringOut = RemoveComments(stringIn)
-    # remove comment character and everything after it
+    % remove comment character and everything after it
     stringOut = regexprep(stringIn, "#.*", "");
 endfunction
 
 function stringOut = StripWhitespaceFromString (stringIn)
-    # remove all whitespace from a string
+    % remove all whitespace from a string
     stringOut = regexprep(stringIn, "\\s", "");
 endfunction
 
 function vector = SplitStringIntoVector(stringIn)
-### if stringIn has separate components, split them
-    ## replace array indicators/separators with whitespace
+%%% if stringIn has separate components, split them
+    %% replace array indicators/separators with whitespace
     stringIn = regexprep(stringIn, "\\[|\\]|,", " ");
     stringIn = strtrim(stringIn);
     vector = strsplit(stringIn);
@@ -116,7 +116,7 @@ function vector = SplitStringIntoVector(stringIn)
 endfunction
 
 function vectorOut = ConvertToNumbers(vectorIn)
-### Converts number strings to floats.  Leaves character strings alone
+%%% Converts number strings to floats.  Leaves character strings alone
     if (isempty(vectorIn))
         vectorOut = vectorIn;
     elseif (!iscell(vectorIn))
@@ -129,7 +129,7 @@ function vectorOut = ConvertToNumbers(vectorIn)
     else
         for (i = 1:numel(vectorIn))
             n = str2double(vectorIn{i});
-            if (isnan(n)) # conversion to number failed
+            if (isnan(n)) % conversion to number failed
                 vectorOut{i} = vectorIn{i};
             else
                 vectorOut{i} = n;
@@ -139,8 +139,8 @@ function vectorOut = ConvertToNumbers(vectorIn)
 endfunction
 
 function vectorOut = ConvertToVector(vectorIn)
-### Converts numeric cell arrays to vectors.  Leaves cell arrays with
-### strings alone.
+%%% Converts numeric cell arrays to vectors.  Leaves cell arrays with
+%%% strings alone.
     if (iscell(vectorIn) && IsCellArrayNumeric(vectorIn))
         vectorOut = ConvertNumericCellArrayToVector(vectorIn);
     else
@@ -178,9 +178,9 @@ function MakeSettingsGlobal (settingsArray)
     endfor
 endfunction
 
-###############################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-### Local Variables:
-### mode:Octave
-### End:
+%%% Local Variables:
+%%% mode:Octave
+%%% End:
