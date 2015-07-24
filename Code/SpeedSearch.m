@@ -42,7 +42,7 @@ function RunBlock ()
     nGabors = 12;
     ## Define destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
-    [x, y] = GetClusteredStimulusLocations(nGabors);
+    [x, y] = GetUniformStimulusLocations(nGabors);
     par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
     ## Gabor drift speed
     randomSign = randi(2, 1, nGabors);
@@ -187,6 +187,15 @@ endfunction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Stimulus Drawing Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [x, y] = GetUniformStimulusLocations (nStimuli)
+    global par;
+    start = 2 * pi * rand();
+    spacing = 2  * pi / nStimuli;
+    angles = start + (0:(nStimuli-1)) * spacing;
+    x = par.screenCenterX + par.displayRadius * sin(angles');
+    y = par.screenCenterY - par.displayRadius * cos(angles');
+end
 
 function [x, y] = GetClusteredStimulusLocations (nStimuli)
     global par;
