@@ -42,10 +42,10 @@ function fid = FindAndOpenSettingsFile ()
     endfor
     if found
         fid = fopen(fileName, 'r');
-        printf('Opened settings file %s\n', fileName);
+        fprintf('Opened settings file %s\n', fileName);
     else
         fid = -1;
-        printf('Could not open settings file\n');
+        fprintf('Could not open settings file\n');
     endif
 endfunction
 
