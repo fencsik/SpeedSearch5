@@ -8,7 +8,7 @@ function LoadSettings ()
     LoadSettingsFile();
     disp(par);
     clear -global
-endfunction
+end
 
 function success = CloseFile(fid)
     x = fclose(fid);
@@ -27,8 +27,8 @@ function LoadSettingsFile ()
         settingsArray = ProcessSettingsFile(fid);
         MakeSettingsGlobal(settingsArray);
         CloseFile(fid);
-    endif
-endfunction
+    end
+end
 
 function fid = FindAndOpenSettingsFile ()
     global par;
@@ -38,16 +38,16 @@ function fid = FindAndOpenSettingsFile ()
         if exist(fileName, 'file')
            found = 1;
            break;
-        endif
-    endfor
+        end
+    end
     if found
         fid = fopen(fileName, 'r');
         fprintf('Opened settings file %s\n', fileName);
     else
         fid = -1;
         fprintf('Could not open settings file\n');
-    endif
-endfunction
+    end
+end
 
 function settingsStruct = ProcessSettingsFile (fid)
     settingsStruct = struct();
@@ -58,9 +58,9 @@ function settingsStruct = ProcessSettingsFile (fid)
             break;
         else
             settingsStruct = setfield(settingsStruct, key, value);
-        endif
-    endwhile
-endfunction
+        end
+    end
+end
 
 function [key, val] = GetNextTokenFromSettingsFile (fid)
     key = [];
@@ -69,40 +69,40 @@ function [key, val] = GetNextTokenFromSettingsFile (fid)
         str = fgetl(fid);
         if (str == -1)
             break;
-        endif
+        end
         str = strtrim(RemoveComments(str));
         if (~isempty(str))
             tokens = strtrim(strsplit(str, '='));
             if (numel(tokens) >= 1)
                 key = ProcessKey(tokens{1});
-            endif
+            end
             if (numel(tokens) >= 2)
                 val = ProcessValue(tokens{2});
-            endif
+            end
             break;
-        endif
-    endwhile
-endfunction
+        end
+    end
+end
 
 function key = ProcessKey(keyToken)
     key = StripWhitespaceFromString(keyToken);
-endfunction
+end
 
 function value = ProcessValue(valueToken)
     value = SplitStringIntoVector(valueToken);
     value = ConvertToNumbers(value);
     value = ConvertToVector(value);
-endfunction
+end
 
 function stringOut = RemoveComments(stringIn)
     % remove comment character and everything after it
     stringOut = regexprep(stringIn, '#.*', '');
-endfunction
+end
 
 function stringOut = StripWhitespaceFromString (stringIn)
     % remove all whitespace from a string
     stringOut = regexprep(stringIn, '\\s', '');
-endfunction
+end
 
 function vector = SplitStringIntoVector(stringIn)
 %%% if stringIn has separate components, split them
@@ -112,8 +112,8 @@ function vector = SplitStringIntoVector(stringIn)
     vector = strsplit(stringIn);
     if (numel(vector) == 1)
         vector = vector{1};
-    endif
-endfunction
+    end
+end
 
 function vectorOut = ConvertToNumbers(vectorIn)
 %%% Converts number strings to floats.  Leaves character strings alone
@@ -125,7 +125,7 @@ function vectorOut = ConvertToNumbers(vectorIn)
             vectorOut = vectorIn;
         else
             vectorOut = n;
-        endif
+        end
     else
         for (i = 1:numel(vectorIn))
             n = str2double(vectorIn{i});
@@ -133,10 +133,10 @@ function vectorOut = ConvertToNumbers(vectorIn)
                 vectorOut{i} = vectorIn{i};
             else
                 vectorOut{i} = n;
-            endif
-        endfor
-    endif
-endfunction
+            end
+        end
+    end
+end
 
 function vectorOut = ConvertToVector(vectorIn)
 %%% Converts numeric cell arrays to vectors.  Leaves cell arrays with
@@ -145,8 +145,8 @@ function vectorOut = ConvertToVector(vectorIn)
         vectorOut = ConvertNumericCellArrayToVector(vectorIn);
     else
         vectorOut = vectorIn;
-    endif
-endfunction
+    end
+end
 
 function val = IsCellArrayNumeric(vector)
     if (iscell(vector))
@@ -155,28 +155,28 @@ function val = IsCellArrayNumeric(vector)
             if (ischar(vector{i}))
                 val = 0;
                 break;
-            endif
-        endfor
+            end
+        end
     else
         val = 0;
-    endif
-endfunction
+    end
+end
 
 function out = ConvertNumericCellArrayToVector(in)
     n = numel(in)
     out = zeros(1, n)
     for (i = 1:n)
         out(i) = in{i};
-    endfor
-endfunction
+    end
+end
 
 function MakeSettingsGlobal (settingsArray)
     global par
     fn = fieldnames(settingsArray);
     for (i = 1:numel(fn))
         par.(fn{i}) = settingsArray.(fn{i});
-    endfor
-endfunction
+    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
