@@ -2,8 +2,8 @@ function LoadSettings ()
     % Tests code to load settings from a settings file.  Intended to be put
     % directly into Psychtoolbox scripts.
     global par = struct();
-    par.settingsFileName = {"Settings.txt", "Settings", ...
-                            "settings.txt", "settings"};
+    par.settingsFileName = {'Settings.txt', 'Settings', ...
+                            'settings.txt', 'settings'};
     disp(par);
     LoadSettingsFile();
     disp(par);
@@ -35,17 +35,17 @@ function fid = FindAndOpenSettingsFile ()
     found = 0;
     for i = 1:numel(par.settingsFileName)
         fileName = par.settingsFileName{i};
-        if exist(fileName, "file")
+        if exist(fileName, 'file')
            found = 1;
            break;
         endif
     endfor
     if found
-        fid = fopen(fileName, "r");
-        printf("Opened settings file %s\n", fileName);
+        fid = fopen(fileName, 'r');
+        printf('Opened settings file %s\n', fileName);
     else
         fid = -1;
-        printf("Could not open settings file\n");
+        printf('Could not open settings file\n');
     endif
 endfunction
 
@@ -72,7 +72,7 @@ function [key, val] = GetNextTokenFromSettingsFile (fid)
         endif
         str = strtrim(RemoveComments(str));
         if (~isempty(str))
-            tokens = strtrim(strsplit(str, "="));
+            tokens = strtrim(strsplit(str, '='));
             if (numel(tokens) >= 1)
                 key = ProcessKey(tokens{1});
             endif
@@ -96,18 +96,18 @@ endfunction
 
 function stringOut = RemoveComments(stringIn)
     % remove comment character and everything after it
-    stringOut = regexprep(stringIn, "#.*", "");
+    stringOut = regexprep(stringIn, '#.*', '');
 endfunction
 
 function stringOut = StripWhitespaceFromString (stringIn)
     % remove all whitespace from a string
-    stringOut = regexprep(stringIn, "\\s", "");
+    stringOut = regexprep(stringIn, '\\s', '');
 endfunction
 
 function vector = SplitStringIntoVector(stringIn)
 %%% if stringIn has separate components, split them
     %% replace array indicators/separators with whitespace
-    stringIn = regexprep(stringIn, "\\[|\\]|,", " ");
+    stringIn = regexprep(stringIn, '\\[|\\]|,', ' ');
     stringIn = strtrim(stringIn);
     vector = strsplit(stringIn);
     if (numel(vector) == 1)
