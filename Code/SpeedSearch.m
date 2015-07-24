@@ -65,6 +65,7 @@ function RunBlock ()
     maxFrameDur = -1;
     sumFrameDur = 0;
     maxPrepDur = -1;
+    sumPrepDur = 0;
     nFrames = 0;
     parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, nGabors);
     gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
@@ -83,15 +84,16 @@ function RunBlock ()
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
         if (!isna(tLastFlip))
-            dur = t - tLastFlip;
-            sumFrameDur = sumFrameDur + dur;
+            frameDur = t - tLastFlip;
+            prepDur = tPrepEnd - tPrepStart;
+            sumFrameDur = sumFrameDur + frameDur;
+            sumPrepDur = sumPrepDur + prepDur;
             nFrames = nFrames + 1;
-            if (dur > maxFrameDur)
-                maxFrameDur = dur;
+            if (frameDur > maxFrameDur)
+                maxFrameDur = frameDur;
             endif
-            dur = tPrepEnd - tPrepStart;
-            if (dur > maxPrepDur)
-                maxPrepDur = dur;
+            if (prepDur > maxPrepDur)
+                maxPrepDur = prepDur;
             endif
         endif
         tLastFlip = t;
@@ -103,6 +105,7 @@ function RunBlock ()
         printf("%0.0f frames completed\n", nFrames);
         printf("Average frame duration = %0.6f ms\n", 1000 * sumFrameDur / nFrames);
         printf("Maximum frame duration = %0.6f ms\n", 1000 * maxFrameDur);
+        printf("Average prep duration  = %0.6f ms\n", 1000 * sumPrepDur / nFrames);
         printf("Maximum prep duration  = %0.6f ms\n", 1000 * maxPrepDur);
     endif
 endfunction
