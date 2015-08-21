@@ -5,27 +5,27 @@ function SpeedSearch (varargin)
     if (nargin > 0)
         HandleInputArguments(varargin{:})
         return;
-    endif
+    end
     try
         RunExperiment();
     catch
         ple();
-    end_try_catch
+    end
     try
         SaveBlockData();
     catch
         ple();
-    end_try_catch
+    end
     Shutdown();
     clear -global;
     clear -all;
-endfunction
+end
 
 function RunExperiment
     Initialize();
     RunBlock();
     Deinitialize();
-endfunction
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,27 +86,27 @@ function RunBlock ()
             nFrames = nFrames + 1;
             if (frameDur > maxFrameDur)
                 maxFrameDur = frameDur;
-            endif
+            end
             if (prepDur > maxPrepDur)
                 maxPrepDur = prepDur;
-            endif
-        endif
+            end
+        end
         tLastFlip = t;
         if (KbCheck)
            break;
-        endif
-    endwhile
+        end
+    end
     if (nFrames > 0)
         fprintf('%0.0f frames completed\n', nFrames);
         fprintf('Average frame duration = %0.6f ms\n', 1000 * sumFrameDur / nFrames);
         fprintf('Maximum frame duration = %0.6f ms\n', 1000 * maxFrameDur);
         fprintf('Average prep duration  = %0.6f ms\n', 1000 * sumPrepDur / nFrames);
         fprintf('Maximum prep duration  = %0.6f ms\n', 1000 * maxPrepDur);
-    endif
-endfunction
+    end
+end
 
 function SaveBlockData ()
-endfunction
+end
 
 
 
@@ -118,7 +118,7 @@ function Initialize ()
     InitializePreGraphics();
     InitializeGraphics();
     InitializePostGraphics();
-endfunction
+end
 
 function InitializePreGraphics ()
     AssertOpenGL();
@@ -137,7 +137,7 @@ function InitializePreGraphics ()
     %% Size of the gabor patch
     par.gaborSize = 200;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
-endfunction
+end
 
 function InitializeGraphics ()
     global par;
@@ -152,7 +152,7 @@ function InitializeGraphics ()
     PsychImaging('PrepareConfiguration');
     PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
     [par.mainWindow, par.mainWindowRect] = PsychImaging('OpenWindow', screenNumber, 128);
-endfunction
+end
 
 function InitializePostGraphics ()
     global par
@@ -169,7 +169,7 @@ function InitializePostGraphics ()
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
     par.slackDuration = par.refreshDuration / 2.0;
     par.frameDuration = par.nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
-endfunction
+end
 
 function Deinitialize ()
 end
@@ -178,20 +178,20 @@ function Shutdown ()
     Priority(0);
     fclose('all');
     ShutdownGraphics();
-endfunction
+end
 
 function ShutdownGraphics ()
     ShowCursor();
     Screen('CloseAll');
-endfunction
+end
 
 
 function HandleInputArguments (varargin)
     global InputArguments
     if (nargin > 0)
         InputArguments.nGabors = varargin{1};
-    endif
-endfunction
+    end
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
