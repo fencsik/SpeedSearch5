@@ -127,7 +127,7 @@ function InitializePreGraphics ()
     % Stimulus layout
     par.nClusters = 3;
     par.nStimuliPerCluster = 4;
-    par.clusterSpacingDenominator = 16; % divides circle by this much
+    par.clusterSpacingDenominator = 16; % >= par.nClusters * par.nStimuliPerCluster
     par.displayRadius = 360;
 
     ## Animation speed
