@@ -34,11 +34,6 @@ endfunction
 
 function RunBlock ()
     global par
-    ## Animation speed
-    nRefreshesPerFrame = 2;
-    ## Size of the underlying sinewave patch
-    par.gaborSize = 200;
-    par.gaborRect = [0 0 par.gaborSize par.gaborSize];
     nGabors = 12;
     ## Define destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
@@ -68,7 +63,6 @@ function RunBlock ()
     sumPrepDur = 0;
     nFrames = 0;
     parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, nGabors);
-    gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
     KbReleaseWait();
     Screen('FillRect', par.mainWindow, 128);
     t = Screen('Flip', par.mainWindow);
@@ -78,7 +72,7 @@ function RunBlock ()
         tPrepStart = GetSecs();
         parameters(1, :) = mod(parameters(1, :) + phaseStep, 360);
         Screen('FillRect', par.mainWindow, 128);
-        Screen('DrawTextures', par.mainWindow, gabortex,
+        Screen('DrawTextures', par.mainWindow, par.gabortex,
                [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, parameters);
         tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
@@ -130,10 +124,18 @@ function InitializePreGraphics ()
     KbName('UnifyKeyNames');
     global par = struct();
 
+    % Stimulus layout
     par.nClusters = 3;
     par.nStimuliPerCluster = 4;
     par.clusterSpacingDenominator = 16; % divides circle by this much
     par.displayRadius = 360;
+
+    ## Animation speed
+    par.nRefreshesPerFrame = 1;
+
+    ## Size of the gabor patch
+    par.gaborSize = 200;
+    par.gaborRect = [0 0 par.gaborSize par.gaborSize];
 endfunction
 
 function InitializeGraphics ()
@@ -158,6 +160,9 @@ function InitializePostGraphics ()
     HideCursor();
 
     [par.screenCenterX, par.screenCenterY] = RectCenter(par.mainWindowRect);
+
+    % Create gabor texture
+    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
 
     % calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
