@@ -66,7 +66,7 @@ function RunBlock ()
     KbReleaseWait();
     Screen('FillRect', par.mainWindow, 128);
     t = Screen('Flip', par.mainWindow);
-    tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
+    tNext = t + par.frameDuration;
     phase = phase - phaseStep;
     while (1)
         tPrepStart = GetSecs();
@@ -76,7 +76,7 @@ function RunBlock ()
                [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, parameters);
         tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
-        tNext = t + nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
+        tNext = t + par.frameDuration;
         if (!isna(tLastFlip))
             frameDur = t - tLastFlip;
             prepDur = tPrepEnd - tPrepStart;
@@ -167,6 +167,7 @@ function InitializePostGraphics ()
     % calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
     par.slackDuration = par.refreshDuration / 2.0;
+    par.frameDuration = par.nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
 endfunction
 
 function Deinitialize ()
