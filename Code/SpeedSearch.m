@@ -97,11 +97,11 @@ function RunBlock ()
         endif
     endwhile
     if (nFrames > 0)
-        printf('%0.0f frames completed\n', nFrames);
-        printf('Average frame duration = %0.6f ms\n', 1000 * sumFrameDur / nFrames);
-        printf('Maximum frame duration = %0.6f ms\n', 1000 * maxFrameDur);
-        printf('Average prep duration  = %0.6f ms\n', 1000 * sumPrepDur / nFrames);
-        printf('Maximum prep duration  = %0.6f ms\n', 1000 * maxPrepDur);
+        fprintf('%0.0f frames completed\n', nFrames);
+        fprintf('Average frame duration = %0.6f ms\n', 1000 * sumFrameDur / nFrames);
+        fprintf('Maximum frame duration = %0.6f ms\n', 1000 * maxFrameDur);
+        fprintf('Average prep duration  = %0.6f ms\n', 1000 * sumPrepDur / nFrames);
+        fprintf('Maximum prep duration  = %0.6f ms\n', 1000 * maxPrepDur);
     endif
 endfunction
 
