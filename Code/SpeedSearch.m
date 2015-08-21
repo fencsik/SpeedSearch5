@@ -28,34 +28,35 @@ function RunExperiment
 endfunction
 
 
-###########################################################################
-### Block-Level Functions
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Block-Level Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 function RunBlock ()
     global par
     nGabors = 12;
-    ## Define destination rects
+    %% Define destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
     [x, y] = GetUniformStimulusLocations(nGabors);
     par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
-    ## Gabor drift speed
+    %% Gabor drift speed
     randomSign = randi(2, 1, nGabors);
     randomSign(randomSign == 2) = -1;
     phaseStep = randomSign .* randi([15 30], 1, nGabors);
-    ## Starting phase
+    %% Starting phase
     phase = 0;
-    ## Gabor frequency (between about .05 and .2 is reasonable)
+    %% Gabor frequency (between about .05 and .2 is reasonable)
     freq = .08;
-    ## Size of gaussian envelope
+    %% Size of gaussian envelope
     spatialconstant = 20;
-    ## Sorta like contrast, but not exactly
+    %% Sorta like contrast, but not exactly
     contrast = 100;
-    ## Ignored unless a parameter is set in the gabor code
+    %% Ignored unless a parameter is set in the gabor code
     aspectratio = 1.0;
-    ## Angle in degrees
+    %% Angle in degrees
     angle = 0;
-    ## Timing checks
+    %% Timing checks
     tLastFlip = NA;
     maxFrameDur = -1;
     sumFrameDur = 0;
@@ -109,9 +110,9 @@ endfunction
 
 
 
-###########################################################################
-### Initialization and Shutdown Functions
-###########################################################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Initialization and Shutdown Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function Initialize ()
     InitializePreGraphics();
@@ -124,16 +125,16 @@ function InitializePreGraphics ()
     KbName('UnifyKeyNames');
     global par = struct();
 
-    % Stimulus layout
+    %% Stimulus layout
     par.nClusters = 3;
     par.nStimuliPerCluster = 4;
     par.clusterSpacingDenominator = 16; % >= par.nClusters * par.nStimuliPerCluster
     par.displayRadius = 360;
 
-    ## Animation speed
+    %% Animation speed
     par.nRefreshesPerFrame = 1;
 
-    ## Size of the gabor patch
+    %% Size of the gabor patch
     par.gaborSize = 200;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
 endfunction
@@ -142,12 +143,12 @@ function InitializeGraphics ()
     global par;
     screenNumber=max(Screen('Screens'));
 
-    ## # Old style of opening windows
-    ## [par.mainWindow, par.mainWindowRect] = ...
-    ##     Screen('OpenWindow', screenNumber, par.backgroundColor, [], 32, 2);
-    ## Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    %% % Old style of opening windows
+    %% [par.mainWindow, par.mainWindowRect] = ...
+    %%     Screen('OpenWindow', screenNumber, par.backgroundColor, [], 32, 2);
+    %% Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    # New style of opening windows
+    %% New style of opening windows
     PsychImaging('PrepareConfiguration');
     PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
     [par.mainWindow, par.mainWindowRect] = PsychImaging('OpenWindow', screenNumber, 128);
@@ -156,15 +157,15 @@ endfunction
 function InitializePostGraphics ()
     global par
     Screen('BlendFunction', par.mainWindow, GL_ONE, GL_ONE);
-    #Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    %%Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     HideCursor();
 
     [par.screenCenterX, par.screenCenterY] = RectCenter(par.mainWindowRect);
 
-    % Create gabor texture
+    %% Create gabor texture
     par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
 
-    % calculate frame durations and number of frames
+    %% calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
     par.slackDuration = par.refreshDuration / 2.0;
     par.frameDuration = par.nRefreshesPerFrame * par.refreshDuration - par.slackDuration;
@@ -233,6 +234,6 @@ function [x, y] = GetClusteredStimulusLocations (nStimuli)
 end
 
 
-### Local Variables:
-### mode:Octave
-### End:
+%%% Local Variables:
+%%% mode:Octave
+%%% End:
