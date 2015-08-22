@@ -40,22 +40,12 @@ function RunBlock ()
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
     [x, y] = GetUniformStimulusLocations(nGabors);
     par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
+    %% Initialize gabors
+    InitializeGaborsForTrial(nGabors);
     %% Gabor drift speed
     randomSign = randi(2, 1, nGabors);
     randomSign(randomSign == 2) = -1;
     phaseStep = randomSign .* randi([15 30], 1, nGabors);
-    %% Starting phase
-    phase = 0;
-    %% Gabor frequency (between about .05 and .2 is reasonable)
-    freq = .08;
-    %% Size of gaussian envelope
-    spatialconstant = 20;
-    %% Sorta like contrast, but not exactly
-    contrast = 100;
-    %% Ignored unless a parameter is set in the gabor code
-    aspectratio = 1.0;
-    %% Angle in degrees
-    angle = 0;
     %% Timing checks
     tLastFlip = NA;
     maxFrameDur = -1;
@@ -63,18 +53,15 @@ function RunBlock ()
     maxPrepDur = -1;
     sumPrepDur = 0;
     nFrames = 0;
-    parameters = repmat([phase + 180, freq, spatialconstant, contrast]', 1, nGabors);
     KbReleaseWait();
     Screen('FillRect', par.mainWindow, 128);
     t = Screen('Flip', par.mainWindow);
     tNext = t + par.frameDuration;
-    phase = phase - phaseStep;
     while (1)
         tPrepStart = GetSecs();
-        parameters(1, :) = mod(parameters(1, :) + phaseStep, 360);
+        DriftGabors(phaseStep);
         Screen('FillRect', par.mainWindow, 128);
-        Screen('DrawTextures', par.mainWindow, par.gabortex,
-               [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation, parameters);
+        DrawGabors();
         tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + par.frameDuration;
@@ -163,7 +150,7 @@ function InitializePostGraphics ()
     [par.screenCenterX, par.screenCenterY] = RectCenter(par.mainWindowRect);
 
     %% Create gabor texture
-    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
+    InitializeGabors();
 
     %% calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
@@ -191,6 +178,50 @@ function HandleInputArguments (varargin)
     if (nargin > 0)
         InputArguments.nGabors = varargin{1};
     end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Gabor Management
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function InitializeGabors ()
+    global par
+    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
+
+    %% Starting phase
+    phase = 0;
+    %% Gabor frequency (between about .05 and .2 is reasonable)
+    freq = .08;
+    %% Size of gaussian envelope
+    spatialconstant = 20;
+    %% Sorta like contrast, but not exactly
+    contrast = 100;
+    %% Ignored unless a parameter is set in the gabor code
+    aspectratio = 1.0;
+    par.gaborBaseVector = [phase; freq; spatialconstant; contrast];
+    par.gaborVectorPhaseIndex = 1;
+end
+
+function InitializeGaborsForTrial(nGabors)
+    global par
+    par.gaborTrialVector = repmat(par.gaborBaseVector, 1, nGabors);
+    par.gaborTrialVector(par.gaborVectorPhaseIndex, :) = randi(360, 1, nGabors) - 1;
+end
+
+function DriftGabors(increment)
+    global par
+    x = par.gaborTrialVector(par.gaborVectorPhaseIndex, :);
+    x = mod(x + increment, 360);
+    par.gaborTrialVector(par.gaborVectorPhaseIndex, :) = x;
+end
+
+function DrawGabors()
+    global par
+    %% Angle in degrees
+    angle = 0;
+    Screen('DrawTextures', par.mainWindow, par.gabortex,
+           [], par.destRect, angle, [], [], [], [], kPsychDontDoRotation,
+           par.gaborTrialVector);
 end
 
 
