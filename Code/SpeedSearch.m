@@ -116,7 +116,7 @@ function InitializePreGraphics ()
     par.nClusters = 3;
     par.nStimuliPerCluster = 4;
     par.clusterSpacingDenominator = 16; % >= par.nClusters * par.nStimuliPerCluster
-    par.displayRadius = 360;
+    par.displayRadius = 300;
 
     %% Animation speed
     par.nRefreshesPerFrame = 1;
