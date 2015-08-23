@@ -40,6 +40,7 @@ function RunBlock ()
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
     [x, y] = GetClusteredStimulusLocations(nGabors);
     par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
+    par.destRect = par.destRect(:, randperm(nGabors));
     %% Initialize gabors
     InitializeGaborsForTrial(nGabors);
     %% Gabor drift speed
