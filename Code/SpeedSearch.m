@@ -255,6 +255,8 @@ function [x, y] = GetClusteredStimulusLocations (nStimuli)
         end
         clusterCenter = clusterCenter + interClusterSpacing;
     end
+    x = x(1:nStimuli);
+    y = y(1:nStimuli);
 end
 
 
