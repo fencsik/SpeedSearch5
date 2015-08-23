@@ -38,7 +38,7 @@ function RunBlock ()
     nGabors = 12;
     %% Define destination rects
     centeredGaborRect = CenterRect(par.gaborRect, par.mainWindowRect);
-    [x, y] = GetUniformStimulusLocations(nGabors);
+    [x, y] = GetClusteredStimulusLocations(nGabors);
     par.destRect = CenterRectOnPoint(centeredGaborRect, x, y)';
     %% Initialize gabors
     InitializeGaborsForTrial(nGabors);
