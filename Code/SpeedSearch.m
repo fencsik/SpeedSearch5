@@ -193,7 +193,7 @@ function InitializeGabors ()
     %% Gabor frequency (between about .05 and .2 is reasonable)
     freq = .05;
     %% Size of gaussian envelope
-    spatialconstant = 10.0;
+    spatialconstant = par.gaborSize / 5;
     %% Sorta like contrast, but not exactly
     contrast = 10.0;
     %% Ignored unless a parameter is set in the gabor code
