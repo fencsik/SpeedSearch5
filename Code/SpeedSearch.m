@@ -112,17 +112,10 @@ function InitializePreGraphics ()
     KbName('UnifyKeyNames');
     global par = struct();
 
-    %% Stimulus layout
-    par.nClusters = 3;
-    par.nStimuliPerCluster = 4;
-    par.clusterSpacingDenominator = 16; % >= par.nClusters * par.nStimuliPerCluster
-    par.displayRadius = 300;
-
-    %% Animation speed
-    par.nRefreshesPerFrame = 1;
+    %% Load settings
+    LoadSettingsFile('Settings.txt');
 
     %% Size of the gabor patch
-    par.gaborSize = 65;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
 end
 
@@ -191,14 +184,14 @@ function InitializeGabors ()
     %% Starting phase
     phase = 0;
     %% Gabor frequency (between about .05 and .2 is reasonable)
-    freq = .05;
+    freq = par.gaborFrequency;
     %% Size of gaussian envelope
     spatialconstant = par.gaborSize / 5;
     %% Sorta like contrast, but not exactly
-    contrast = 10.0;
+    amplitudeMultiplier = par.gaborAmplitudeMultiplier;
     %% Ignored unless a parameter is set in the gabor code
     aspectratio = 1.0;
-    par.gaborBaseVector = [phase; freq; spatialconstant; contrast];
+    par.gaborBaseVector = [phase; freq; spatialconstant; amplitudeMultiplier];
     par.gaborVectorPhaseIndex = 1;
 end
 
