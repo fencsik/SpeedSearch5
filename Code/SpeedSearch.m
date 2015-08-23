@@ -122,7 +122,7 @@ function InitializePreGraphics ()
     par.nRefreshesPerFrame = 1;
 
     %% Size of the gabor patch
-    par.gaborSize = 200;
+    par.gaborSize = 65;
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
 end
 
@@ -191,11 +191,11 @@ function InitializeGabors ()
     %% Starting phase
     phase = 0;
     %% Gabor frequency (between about .05 and .2 is reasonable)
-    freq = .08;
+    freq = .05;
     %% Size of gaussian envelope
-    spatialconstant = 20;
+    spatialconstant = 10.0;
     %% Sorta like contrast, but not exactly
-    contrast = 100;
+    contrast = 10.0;
     %% Ignored unless a parameter is set in the gabor code
     aspectratio = 1.0;
     par.gaborBaseVector = [phase; freq; spatialconstant; contrast];
