@@ -323,7 +323,7 @@ end
 
 function stringOut = RemoveComments(stringIn)
     % remove comment character and everything after it
-    stringOut = regexprep(stringIn, '#.*', '');
+    stringOut = regexprep(stringIn, '%.*', '');
 end
 
 function stringOut = StripWhitespaceFromString (stringIn)
