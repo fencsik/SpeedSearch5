@@ -14,6 +14,11 @@ gaborFrequency = .05
 % before converting the value into a color value.
 gaborAmplitudeMultiplier = 10.0
 
+% Fixation settings
+fixationSize = 10 % half-size, actually
+fixationColor = 0 255 0
+fixationWidth = 1
+
 % Refreshes per frame (lower numbers -> higher frames/sec)
 nRefreshesPerFrame = 1
 

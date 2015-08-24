@@ -63,6 +63,7 @@ function RunBlock ()
         DriftGabors(phaseStep);
         Screen('FillRect', par.mainWindow, 128);
         DrawGabors();
+        DrawFixation();
         tPrepEnd = GetSecs();
         t = Screen('Flip', par.mainWindow, tNext);
         tNext = t + par.frameDuration;
@@ -118,6 +119,7 @@ function InitializePreGraphics ()
 
     %% Size of the gabor patch
     par.gaborRect = [0 0 par.gaborSize par.gaborSize];
+
 end
 
 function InitializeGraphics ()
@@ -145,6 +147,18 @@ function InitializePostGraphics ()
 
     %% Create gabor texture
     InitializeGabors();
+
+    %% Define endpoints of fixation cross for Screen('DrawLines')
+    f = par.fixationSize;
+    cx = par.screenCenterX;
+    cy = par.screenCenterY;
+    par.fixationEndpoints = [[cx - f; cy - f], ...
+                             [cx + f; cy + f], ...
+                             [cx + f; cy - f], ...
+                             [cx - f; cy + f]];
+    disp(par.fixationEndpoints);
+    disp(par.fixationWidth);
+    disp(par.fixationColor);
 
     %% calculate frame durations and number of frames
     par.refreshDuration = Screen('GetFlipInterval', par.mainWindow);
@@ -259,6 +273,18 @@ function [x, y] = GetClusteredStimulusLocations (nStimuli)
     x = x(1:nStimuli);
     y = y(1:nStimuli);
 end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Basic Drawing Commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function DrawFixation()
+    global par;
+    Screen('DrawLines', par.mainWindow, par.fixationEndpoints,
+           par.fixationWidth, par.fixationColor);
+end
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
