@@ -1,8 +1,13 @@
 % Everything after a "%" is treated as a comment
 
-% Stimulus size: visible size is lower than this because of the gaussian
-% envelope
-gaborSize = 65
+% Texture size: size of the texture that holds the gabor.  The visible size
+% is lower than this because of the gaussian envelope
+gaborTextureSize = 100
+
+% The visible size of the gabor, more or less.  From 'help
+% CreateProceduralGabor': "spatial constant of the gaussian hull function
+% of the gabor, ie. the 'sigma' value in the exponential function."
+gaborEnvelopeSize = 15.0
 
 % Gabor patch frequency (f) in cycles per pixel.  In other words, 1/f is
 % the width of a pair of stripes in pixels, and 1/f/2 is the width of a

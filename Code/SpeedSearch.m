@@ -118,7 +118,7 @@ function InitializePreGraphics ()
     LoadSettingsFile('Settings.txt');
 
     %% Size of the gabor patch
-    par.gaborRect = [0 0 par.gaborSize par.gaborSize];
+    par.gaborRect = [0 0 par.gaborTextureSize par.gaborTextureSize];
 
 end
 
@@ -194,14 +194,14 @@ end
 
 function InitializeGabors ()
     global par
-    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborSize, par.gaborSize);
+    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborTextureSize, par.gaborTextureSize);
 
     %% Starting phase
     phase = 0;
     %% Gabor frequency (between about .05 and .2 is reasonable)
     freq = par.gaborFrequency;
     %% Size of gaussian envelope
-    spatialconstant = par.gaborSize / 5;
+    spatialconstant = par.gaborEnvelopeSize;
     %% Sorta like contrast, but not exactly
     amplitudeMultiplier = par.gaborAmplitudeMultiplier;
     %% Ignored unless a parameter is set in the gabor code
