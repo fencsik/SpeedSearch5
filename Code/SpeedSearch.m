@@ -117,9 +117,6 @@ function InitializePreGraphics ()
     %% Load settings
     LoadSettingsFile('Settings.txt');
 
-    %% Size of the gabor patch
-    par.gaborRect = [0 0 par.gaborTextureSize par.gaborTextureSize];
-
 end
 
 function InitializeGraphics ()
@@ -194,6 +191,10 @@ end
 
 function InitializeGabors ()
     global par
+
+    %% Size of the gabor patch
+    par.gaborRect = [0 0 par.gaborTextureSize par.gaborTextureSize];
+
     par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborTextureSize, par.gaborTextureSize);
 
     %% Starting phase
