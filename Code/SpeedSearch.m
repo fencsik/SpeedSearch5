@@ -205,7 +205,7 @@ function InitializeGabors ()
     spatialconstant = par.gaborEnvelopeSize;
     %% Sorta like contrast, but not exactly
     amplitudeMultiplier = par.gaborAmplitudeMultiplier;
-    %% Ignored unless a parameter is set in the gabor code
+    %% Ignored unless a parameter is set in CreateProceduralGabor()
     aspectratio = 1.0;
     par.gaborBaseVector = [phase; freq; spatialconstant; amplitudeMultiplier];
     par.gaborVectorPhaseIndex = 1;
