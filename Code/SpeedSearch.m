@@ -136,7 +136,7 @@ end
 
 function InitializePostGraphics ()
     global par
-    Screen('BlendFunction', par.mainWindow, GL_ONE, GL_ONE);
+    %%Screen('BlendFunction', par.mainWindow, GL_ONE, GL_ONE);
     %%Screen('BlendFunction', par.mainWindow, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     HideCursor();
 
@@ -195,7 +195,10 @@ function InitializeGabors ()
     %% Size of the gabor patch
     par.gaborRect = [0 0 par.gaborTextureSize par.gaborTextureSize];
 
-    par.gabortex = CreateProceduralGabor(par.mainWindow, par.gaborTextureSize, par.gaborTextureSize);
+    %% Create gabor patch texture
+    par.gabortex = CreateProceduralGabor(par.mainWindow, ...
+                                         par.gaborTextureSize, par.gaborTextureSize, ...
+                                         [], [0.5 0.5 0.5 0.0]);
 
     %% Starting phase
     phase = 0;
